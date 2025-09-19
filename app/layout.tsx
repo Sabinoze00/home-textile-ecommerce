@@ -1,0 +1,63 @@
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: 'Home Textile Store - Quality Bedding & Home Decor',
+  description: 'Discover premium bedding, comforters, sheets, and home textiles. Transform your space with our curated collection of quality home goods.',
+  keywords: ['bedding', 'sheets', 'comforters', 'home textiles', 'home decor', 'quality bedding'],
+  authors: [{ name: 'Home Textile Store' }],
+  creator: 'Home Textile Store',
+  publisher: 'Home Textile Store',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://hometextilestore.com',
+    title: 'Home Textile Store - Quality Bedding & Home Decor',
+    description: 'Discover premium bedding, comforters, sheets, and home textiles.',
+    siteName: 'Home Textile Store',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Home Textile Store - Quality Bedding & Home Decor',
+    description: 'Discover premium bedding, comforters, sheets, and home textiles.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'google-site-verification-code',
+  },
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en" className="scroll-smooth">
+      <body className={`${inter.className} antialiased`}>
+        <div className="flex min-h-screen flex-col">
+          <Header />
+          <main className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </div>
+      </body>
+    </html>
+  )
+}

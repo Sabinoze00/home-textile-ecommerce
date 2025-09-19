@@ -1,0 +1,369 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  image       String
+  badge       String?   // 'sale' | 'bestseller' | 'new' | 'featured'
+  isActive    Boolean   @default(true)
+  sortOrder   Int       @default(0)
+
+  // Relations
+  products    Product[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("categories")
+}
+
+model Product {
+  id                 String                 @id @default(cuid())
+  name               String
+  slug               String                 @unique
+  description        String                 @db.Text
+  shortDescription   String?
+  price              Decimal                @db.Decimal(10, 2)
+  originalPrice      Decimal?               @db.Decimal(10, 2)
+  discountPercentage Int?
+  sku                String                 @unique
+  inStock            Boolean                @default(true)
+  stockQuantity      Int?
+  tags               String[]               @default([])
+  rating             Decimal?               @db.Decimal(3, 2)
+  ratingCount        Int                    @default(0)
+  isFeatured         Boolean                @default(false)
+  isOnSale           Boolean                @default(false)
+  isNew              Boolean                @default(false)
+  isBestseller       Boolean                @default(false)
+
+  // Foreign keys
+  categoryId         String
+
+  // Relations
+  category           Category               @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  images             ProductImage[]
+  variants           ProductVariant[]
+  specifications     ProductSpecification[]
+  reviews            ProductReview[]
+
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+
+  // Indexes for search optimization
+  @@index([name])
+  @@index([description])
+  @@index([categoryId])
+  @@index([price])
+  @@index([rating])
+  @@index([isFeatured])
+  @@index([isOnSale])
+  @@index([isBestseller])
+  @@index([inStock])
+  @@map("products")
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  url       String
+  alt       String
+  isPrimary Boolean @default(false)
+  sortOrder Int     @default(0)
+
+  // Foreign keys
+  productId String
+
+  // Relations
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("product_images")
+}
+
+model ProductVariant {
+  id      String  @id @default(cuid())
+  name    String
+  type    String  // 'color' | 'size' | 'material' | 'pattern'
+  value   String
+  price   Decimal? @db.Decimal(10, 2)
+  sku     String?
+  inStock Boolean @default(true)
+  image   String?
+
+  // Foreign keys
+  productId String
+
+  // Relations
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("product_variants")
+}
+
+model ProductSpecification {
+  id       String  @id @default(cuid())
+  name     String
+  value    String
+  category String?
+
+  // Foreign keys
+  productId String
+
+  // Relations
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("product_specifications")
+}
+
+model ProductReview {
+  id                 String  @id @default(cuid())
+  userName           String
+  userEmail          String?
+  rating             Int
+  title              String
+  comment            String  @db.Text
+  isVerifiedPurchase Boolean @default(false)
+  helpful            Int     @default(0)
+
+  // Foreign keys
+  productId          String
+
+  // Relations
+  product            Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("product_reviews")
+}
+
+// NextAuth.js Models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  firstName     String?
+  lastName      String?
+  phone         String?
+
+  accounts Account[]
+  sessions Session[]
+  orders   Order[]
+  addresses Address[]
+  carts    Cart[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// E-commerce Models
+model Address {
+  id         String  @id @default(cuid())
+  firstName  String
+  lastName   String
+  company    String?
+  street     String
+  city       String
+  state      String
+  postalCode String
+  country    String
+  phone      String?
+  isDefault  Boolean @default(false)
+  type       String  // 'shipping' | 'billing'
+
+  // Foreign keys
+  userId     String
+
+  // Relations
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shippingOrders Order[] @relation("ShippingAddress")
+  billingOrders  Order[] @relation("BillingAddress")
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("addresses")
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  status          OrderStatus @default(PENDING)
+  subtotal        Decimal     @db.Decimal(10, 2)
+  tax             Decimal     @db.Decimal(10, 2)
+  shipping        Decimal     @db.Decimal(10, 2)
+  total           Decimal     @db.Decimal(10, 2)
+  currency        String      @default("USD")
+  notes           String?     @db.Text
+
+  // Payment information
+  paymentStatus   PaymentStatus @default(PENDING)
+  paymentMethod   String?
+
+  // Shipping information
+  shippingMethod  String?
+  trackingNumber  String?
+  estimatedDelivery DateTime?
+
+  // Foreign keys
+  userId          String
+  shippingAddressId String
+  billingAddressId  String
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shippingAddress Address   @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
+  billingAddress  Address   @relation("BillingAddress", fields: [billingAddressId], references: [id])
+  items           OrderItem[]
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Indexes
+  @@index([userId])
+  @@index([status])
+  @@index([orderNumber])
+  @@map("orders")
+}
+
+model OrderItem {
+  id            String  @id @default(cuid())
+  quantity      Int
+  price         Decimal @db.Decimal(10, 2)
+  total         Decimal @db.Decimal(10, 2)
+
+  // Product snapshot data
+  productName   String
+  productSlug   String
+  productImage  String
+  variantName   String?
+  variantValue  String?
+
+  // Foreign keys
+  orderId       String
+  productId     String
+  variantId     String?
+
+  // Relations
+  order         Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("order_items")
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+
+  // Foreign keys
+  userId    String
+
+  // Relations
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("carts")
+}
+
+model CartItem {
+  id        String @id @default(cuid())
+  quantity  Int
+
+  // Foreign keys
+  cartId    String
+  productId String
+  variantId String?
+
+  // Relations
+  cart      Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId, variantId])
+  @@map("cart_items")
+}
+
+// Enums
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
