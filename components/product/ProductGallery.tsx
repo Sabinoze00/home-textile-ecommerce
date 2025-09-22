@@ -17,7 +17,7 @@ export function ProductGallery({
   images,
   productName,
   className,
-  selectedVariantImage
+  selectedVariantImage,
 }: ProductGalleryProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [isZoomOpen, setIsZoomOpen] = useState(false)
@@ -26,7 +26,16 @@ export function ProductGallery({
 
   // Use variant image if selected, otherwise use the images array
   const displayImages = selectedVariantImage
-    ? [{ id: 'variant', url: selectedVariantImage, alt: productName, isPrimary: true, sortOrder: 0 }, ...images]
+    ? [
+        {
+          id: 'variant',
+          url: selectedVariantImage,
+          alt: productName,
+          isPrimary: true,
+          sortOrder: 0,
+        },
+        ...images,
+      ]
     : images
 
   const selectedImage = displayImages[selectedImageIndex]
@@ -38,14 +47,23 @@ export function ProductGallery({
     }
   }, [])
 
+  // Return early if no image is available
+  if (!selectedImage) {
+    return (
+      <div className={cn('flex h-96 items-center justify-center rounded-lg bg-gray-100', className)}>
+        <span className="text-gray-400">No image available</span>
+      </div>
+    )
+  }
+
   const nextImage = () => {
-    setSelectedImageIndex((prev) =>
+    setSelectedImageIndex(prev =>
       prev === displayImages.length - 1 ? 0 : prev + 1
     )
   }
 
   const prevImage = () => {
-    setSelectedImageIndex((prev) =>
+    setSelectedImageIndex(prev =>
       prev === 0 ? displayImages.length - 1 : prev - 1
     )
   }
@@ -82,7 +100,12 @@ export function ProductGallery({
 
   if (!displayImages || displayImages.length === 0) {
     return (
-      <div className={cn('aspect-square bg-gray-200 rounded-lg flex items-center justify-center', className)}>
+      <div
+        className={cn(
+          'flex aspect-square items-center justify-center rounded-lg bg-gray-200',
+          className
+        )}
+      >
         <span className="text-gray-400">No images available</span>
       </div>
     )
@@ -91,10 +114,10 @@ export function ProductGallery({
   return (
     <div className={cn('space-y-4', className)}>
       {/* Main Image */}
-      <div className="relative group">
+      <div className="group relative">
         <div
           ref={mainImageRef}
-          className="relative aspect-square overflow-hidden rounded-lg bg-gray-100 cursor-zoom-in"
+          className="relative aspect-square cursor-zoom-in overflow-hidden rounded-lg bg-gray-100"
           onMouseMove={handleMouseMove}
           onClick={openZoom}
         >
@@ -108,9 +131,9 @@ export function ProductGallery({
           />
 
           {/* Zoom indicator */}
-          <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="bg-black/70 text-white p-2 rounded-full">
-              <ZoomIn className="w-4 h-4" />
+          <div className="absolute right-4 top-4 opacity-0 transition-opacity group-hover:opacity-100">
+            <div className="rounded-full bg-black/70 p-2 text-white">
+              <ZoomIn className="h-4 w-4" />
             </div>
           </div>
 
@@ -118,24 +141,24 @@ export function ProductGallery({
           {displayImages.length > 1 && (
             <>
               <button
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation()
                   prevImage()
                 }}
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity md:hidden"
+                className="absolute left-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white opacity-0 transition-opacity group-hover:opacity-100 md:hidden"
                 aria-label="Previous image"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="h-4 w-4" />
               </button>
               <button
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation()
                   nextImage()
                 }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity md:hidden"
+                className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white opacity-0 transition-opacity group-hover:opacity-100 md:hidden"
                 aria-label="Next image"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="h-4 w-4" />
               </button>
             </>
           )}
@@ -143,7 +166,7 @@ export function ProductGallery({
 
         {/* Image counter */}
         {displayImages.length > 1 && (
-          <div className="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+          <div className="absolute bottom-4 left-4 rounded-full bg-black/70 px-3 py-1 text-sm text-white">
             {selectedImageIndex + 1} / {displayImages.length}
           </div>
         )}
@@ -151,7 +174,7 @@ export function ProductGallery({
 
       {/* Thumbnail Grid */}
       {displayImages.length > 1 && (
-        <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
+        <div className="grid grid-cols-4 gap-2 md:grid-cols-6">
           {displayImages.map((image, index) => (
             <button
               key={image.id || index}
@@ -178,7 +201,7 @@ export function ProductGallery({
       {/* Zoom Modal */}
       {isZoomOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
           onClick={closeZoom}
           onKeyDown={handleKeyDown}
           tabIndex={0}
@@ -186,46 +209,46 @@ export function ProductGallery({
           {/* Close button */}
           <button
             onClick={closeZoom}
-            className="absolute top-4 right-4 z-10 w-10 h-10 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+            className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/30"
             aria-label="Close zoom"
           >
-            <X className="w-6 h-6" />
+            <X className="h-6 w-6" />
           </button>
 
           {/* Navigation buttons */}
           {displayImages.length > 1 && (
             <>
               <button
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation()
                   prevImage()
                 }}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+                className="absolute left-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/30"
                 aria-label="Previous image"
               >
-                <ChevronLeft className="w-6 h-6" />
+                <ChevronLeft className="h-6 w-6" />
               </button>
               <button
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation()
                   nextImage()
                 }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+                className="absolute right-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/30"
                 aria-label="Next image"
               >
-                <ChevronRight className="w-6 h-6" />
+                <ChevronRight className="h-6 w-6" />
               </button>
             </>
           )}
 
           {/* Zoomed image */}
-          <div className="relative max-w-full max-h-full m-8">
+          <div className="relative m-8 max-h-full max-w-full">
             <Image
               src={selectedImage.url}
               alt={selectedImage.alt || productName}
               width={1200}
               height={1200}
-              className="max-w-full max-h-full object-contain"
+              className="max-h-full max-w-full object-contain"
               style={{
                 transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
               }}
@@ -233,7 +256,7 @@ export function ProductGallery({
           </div>
 
           {/* Image info */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full">
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/70 px-4 py-2 text-white">
             <span className="text-sm">
               {selectedImageIndex + 1} of {displayImages.length}
             </span>

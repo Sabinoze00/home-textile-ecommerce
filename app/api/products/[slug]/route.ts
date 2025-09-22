@@ -45,10 +45,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     })
 
     if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
     // Get related products (same category, excluding current product)
@@ -79,7 +76,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     // Calculate rating distribution from all reviews
     const ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
-    allReviews.forEach((review) => {
+    allReviews.forEach(review => {
       ratingDistribution[review.rating as keyof typeof ratingDistribution]++
     })
 
@@ -91,12 +88,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       description: product.description,
       shortDescription: product.shortDescription,
       price: Number(product.price),
-      originalPrice: product.originalPrice ? Number(product.originalPrice) : undefined,
+      originalPrice: product.originalPrice
+        ? Number(product.originalPrice)
+        : undefined,
       discountPercentage: product.discountPercentage,
       sku: product.sku,
       inStock: product.inStock,
       stockQuantity: product.stockQuantity,
-      images: product.images.map((img) => ({
+      images: product.images.map(img => ({
         id: img.id,
         url: img.url,
         alt: img.alt,
@@ -110,7 +109,12 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         href: `/products?category=${product.category.slug}`,
         image: product.category.image,
         description: product.category.description,
-        badge: product.category.badge as 'sale' | 'bestseller' | 'new' | 'featured' | null,
+        badge: product.category.badge as
+          | 'sale'
+          | 'bestseller'
+          | 'new'
+          | 'featured'
+          | null,
         isActive: product.category.isActive,
         sortOrder: product.category.sortOrder,
       },
@@ -122,7 +126,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
             distribution: ratingDistribution,
           }
         : undefined,
-      variants: product.variants.map((variant) => ({
+      variants: product.variants.map(variant => ({
         id: variant.id,
         name: variant.name,
         type: variant.type as 'color' | 'size' | 'material' | 'pattern',
@@ -132,13 +136,13 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         inStock: variant.inStock,
         image: variant.image,
       })),
-      specifications: product.specifications.map((spec) => ({
+      specifications: product.specifications.map(spec => ({
         id: spec.id,
         name: spec.name,
         value: spec.value,
         category: spec.category,
       })),
-      reviews: product.reviews.map((review) => ({
+      reviews: product.reviews.map(review => ({
         id: review.id,
         productId: review.productId,
         userName: review.userName,
@@ -150,19 +154,21 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         helpful: review.helpful,
         createdAt: review.createdAt,
       })),
-      relatedProducts: relatedProducts.map((relatedProduct) => ({
+      relatedProducts: relatedProducts.map(relatedProduct => ({
         id: relatedProduct.id,
         name: relatedProduct.name,
         slug: relatedProduct.slug,
         description: relatedProduct.description,
         shortDescription: relatedProduct.shortDescription,
         price: Number(relatedProduct.price),
-        originalPrice: relatedProduct.originalPrice ? Number(relatedProduct.originalPrice) : undefined,
+        originalPrice: relatedProduct.originalPrice
+          ? Number(relatedProduct.originalPrice)
+          : undefined,
         discountPercentage: relatedProduct.discountPercentage,
         sku: relatedProduct.sku,
         inStock: relatedProduct.inStock,
         stockQuantity: relatedProduct.stockQuantity,
-        images: relatedProduct.images.map((img) => ({
+        images: relatedProduct.images.map(img => ({
           id: img.id,
           url: img.url,
           alt: img.alt,
@@ -176,12 +182,17 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           href: `/products?category=${relatedProduct.category.slug}`,
           image: relatedProduct.category.image,
           description: relatedProduct.category.description,
-          badge: relatedProduct.category.badge as 'sale' | 'bestseller' | 'new' | 'featured' | null,
+          badge: relatedProduct.category.badge as
+            | 'sale'
+            | 'bestseller'
+            | 'new'
+            | 'featured'
+            | null,
           isActive: relatedProduct.category.isActive,
           sortOrder: relatedProduct.category.sortOrder,
         },
         tags: relatedProduct.tags,
-        variants: relatedProduct.variants.map((variant) => ({
+        variants: relatedProduct.variants.map(variant => ({
           id: variant.id,
           name: variant.name,
           type: variant.type as 'color' | 'size' | 'material' | 'pattern',

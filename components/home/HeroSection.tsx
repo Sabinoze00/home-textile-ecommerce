@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 
 export function HeroSection() {
   return (
-    <section className="relative h-[60vh] md:h-[70vh] lg:h-[80vh] overflow-hidden">
+    <section className="relative h-[60vh] overflow-hidden md:h-[70vh] lg:h-[80vh]">
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
@@ -19,14 +19,13 @@ export function HeroSection() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex items-center justify-center h-full">
-        <div className="text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
-            How we do{' '}
-            <span className="text-textile-cream italic">cozy</span>
+      <div className="relative z-10 flex h-full items-center justify-center">
+        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+          <h1 className="mb-4 text-4xl font-bold leading-tight text-white md:text-5xl lg:text-6xl">
+            How we do <span className="italic text-textile-cream">cozy</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-textile-cream mb-8 max-w-2xl mx-auto leading-relaxed">
+          <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-textile-cream md:text-xl">
             Transform your space with our curated collection of premium bedding,
             home textiles, and decor designed for ultimate comfort.
           </p>
@@ -34,7 +33,7 @@ export function HeroSection() {
           <Button
             size="lg"
             variant="textile"
-            className="text-base px-8 py-4 h-auto font-semibold tracking-wide hover:bg-white hover:text-textile-navy transition-all duration-300"
+            className="h-auto px-8 py-4 text-base font-semibold tracking-wide transition-all duration-300 hover:bg-white hover:text-textile-navy"
           >
             SHOP NEW ARRIVALS
           </Button>
@@ -42,9 +41,9 @@ export function HeroSection() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 hidden md:block">
-        <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-white rounded-full mt-2 animate-bounce" />
+      <div className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 transform md:block">
+        <div className="flex h-10 w-6 justify-center rounded-full border-2 border-white">
+          <div className="mt-2 h-3 w-1 animate-bounce rounded-full bg-white" />
         </div>
       </div>
     </section>

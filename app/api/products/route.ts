@@ -102,7 +102,8 @@ export async function GET(request: NextRequest) {
 
     // Apply variant filters using AND logic
     if (variantFilters.length > 0) {
-      where.AND = [...(where.AND || []), ...variantFilters]
+      const existingAnd = Array.isArray(where.AND) ? where.AND : []
+      where.AND = [...existingAnd, ...variantFilters]
     }
 
     // Rating filter
@@ -186,19 +187,21 @@ export async function GET(request: NextRequest) {
     })
 
     // Transform data to match frontend types
-    const transformedProducts = products.map((product) => ({
+    const transformedProducts = products.map(product => ({
       id: product.id,
       name: product.name,
       slug: product.slug,
       description: product.description,
       shortDescription: product.shortDescription,
       price: Number(product.price),
-      originalPrice: product.originalPrice ? Number(product.originalPrice) : undefined,
+      originalPrice: product.originalPrice
+        ? Number(product.originalPrice)
+        : undefined,
       discountPercentage: product.discountPercentage,
       sku: product.sku,
       inStock: product.inStock,
       stockQuantity: product.stockQuantity,
-      images: product.images.map((img) => ({
+      images: product.images.map(img => ({
         id: img.id,
         url: img.url,
         alt: img.alt,
@@ -212,7 +215,12 @@ export async function GET(request: NextRequest) {
         href: `/products?category=${product.category.slug}`,
         image: product.category.image,
         description: product.category.description,
-        badge: product.category.badge as 'sale' | 'bestseller' | 'new' | 'featured' | null,
+        badge: product.category.badge as
+          | 'sale'
+          | 'bestseller'
+          | 'new'
+          | 'featured'
+          | null,
         isActive: product.category.isActive,
         sortOrder: product.category.sortOrder,
       },
@@ -224,7 +232,7 @@ export async function GET(request: NextRequest) {
             distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }, // Simplified for now
           }
         : undefined,
-      variants: product.variants.map((variant) => ({
+      variants: product.variants.map(variant => ({
         id: variant.id,
         name: variant.name,
         type: variant.type as 'color' | 'size' | 'material' | 'pattern',

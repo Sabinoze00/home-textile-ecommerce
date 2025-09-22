@@ -10,7 +10,11 @@ import { ProductVariant } from '@/types'
 interface VariantSelectorProps {
   variants: ProductVariant[]
   selectedVariants?: Record<string, string>
-  onVariantChange?: (type: string, value: string, variant: ProductVariant) => void
+  onVariantChange?: (
+    type: string,
+    value: string,
+    variant: ProductVariant
+  ) => void
   className?: string
   showPricing?: boolean
   basePrice?: number
@@ -22,22 +26,26 @@ export function VariantSelector({
   onVariantChange,
   className,
   showPricing = false,
-  basePrice = 0
+  basePrice = 0,
 }: VariantSelectorProps) {
-  const [localSelectedVariants, setLocalSelectedVariants] = useState<Record<string, string>>(selectedVariants)
+  const [localSelectedVariants, setLocalSelectedVariants] =
+    useState<Record<string, string>>(selectedVariants)
 
   useEffect(() => {
     setLocalSelectedVariants(selectedVariants)
   }, [selectedVariants])
 
   // Group variants by type
-  const variantsByType = variants.reduce((acc, variant) => {
-    if (!acc[variant.type]) {
-      acc[variant.type] = []
-    }
-    acc[variant.type].push(variant)
-    return acc
-  }, {} as Record<string, ProductVariant[]>)
+  const variantsByType = variants.reduce(
+    (acc, variant) => {
+      if (!acc[variant.type]) {
+        acc[variant.type] = []
+      }
+      acc[variant.type].push(variant)
+      return acc
+    },
+    {} as Record<string, ProductVariant[]>
+  )
 
   const handleVariantSelect = (type: string, value: string) => {
     const variant = variants.find(v => v.type === type && v.value === value)
@@ -45,7 +53,7 @@ export function VariantSelector({
 
     const newSelectedVariants = {
       ...localSelectedVariants,
-      [type]: value
+      [type]: value,
     }
 
     setLocalSelectedVariants(newSelectedVariants)
@@ -58,10 +66,14 @@ export function VariantSelector({
 
   const getSelectedVariantPrice = (): number => {
     const selectedVariantsList = Object.entries(localSelectedVariants)
-      .map(([type, value]) => variants.find(v => v.type === type && v.value === value))
+      .map(([type, value]) =>
+        variants.find(v => v.type === type && v.value === value)
+      )
       .filter(Boolean) as ProductVariant[]
 
-    const variantWithPrice = selectedVariantsList.find(v => v.price !== undefined && v.price !== null)
+    const variantWithPrice = selectedVariantsList.find(
+      v => v.price !== undefined && v.price !== null
+    )
     return variantWithPrice?.price || basePrice
   }
 
@@ -87,8 +99,8 @@ export function VariantSelector({
             </h4>
             {localSelectedVariants[type] && (
               <span className="text-sm text-gray-600">
-                {typeVariants.find(v => v.value === localSelectedVariants[type])?.name ||
-                 localSelectedVariants[type]}
+                {typeVariants.find(v => v.value === localSelectedVariants[type])
+                  ?.name || localSelectedVariants[type]}
               </span>
             )}
           </div>
@@ -98,14 +110,14 @@ export function VariantSelector({
             <ColorPicker
               colors={typeVariants}
               selectedColor={localSelectedVariants[type]}
-              onColorSelect={(value) => handleVariantSelect(type, value)}
+              onColorSelect={value => handleVariantSelect(type, value)}
               size="lg"
               mode="full"
             />
           ) : (
             /* Other variants use button grid */
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {typeVariants.map((variant) => {
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              {typeVariants.map(variant => {
                 const isSelected = localSelectedVariants[type] === variant.value
                 const isAvailable = isVariantAvailable(variant)
                 const variantPrice = getVariantPrice(variant)
@@ -114,57 +126,63 @@ export function VariantSelector({
                 return (
                   <button
                     key={variant.id}
-                    onClick={() => isAvailable && handleVariantSelect(type, variant.value)}
+                    onClick={() =>
+                      isAvailable && handleVariantSelect(type, variant.value)
+                    }
                     disabled={!isAvailable}
                     className={cn(
-                      'relative flex flex-col items-center justify-center p-4 border-2 rounded-lg transition-all duration-200 text-left',
+                      'relative flex flex-col items-center justify-center rounded-lg border-2 p-4 text-left transition-all duration-200',
                       isSelected
                         ? 'border-textile-navy bg-textile-navy/5 shadow-sm'
                         : isAvailable
-                        ? 'border-gray-300 hover:border-gray-400 hover:shadow-sm'
-                        : 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60',
+                          ? 'border-gray-300 hover:border-gray-400 hover:shadow-sm'
+                          : 'cursor-not-allowed border-gray-200 bg-gray-50 opacity-60',
                       'min-h-[4rem]'
                     )}
                     title={variant.name || variant.value}
                   >
                     {/* Selected indicator */}
                     {isSelected && (
-                      <div className="absolute top-2 right-2">
-                        <div className="w-5 h-5 bg-textile-navy rounded-full flex items-center justify-center">
-                          <Check className="w-3 h-3 text-white" />
+                      <div className="absolute right-2 top-2">
+                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-textile-navy">
+                          <Check className="h-3 w-3 text-white" />
                         </div>
                       </div>
                     )}
 
                     {/* Variant name */}
-                    <span className={cn(
-                      'font-medium text-sm text-center',
-                      isSelected ? 'text-textile-navy' : 'text-gray-900'
-                    )}>
+                    <span
+                      className={cn(
+                        'text-center text-sm font-medium',
+                        isSelected ? 'text-textile-navy' : 'text-gray-900'
+                      )}
+                    >
                       {variant.name || variant.value}
                     </span>
 
                     {/* Price difference */}
                     {showPrice && (
-                      <span className="text-xs text-gray-600 mt-1">
-                        {variantPrice > basePrice ? '+' : ''}
-                        ${(variantPrice - basePrice).toFixed(2)}
+                      <span className="mt-1 text-xs text-gray-600">
+                        {variantPrice > basePrice ? '+' : ''}$
+                        {(variantPrice - basePrice).toFixed(2)}
                       </span>
                     )}
 
                     {/* Out of stock indicator */}
                     {!isAvailable && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-lg">
+                      <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-white/80">
                         <div className="flex items-center gap-1 text-red-600">
-                          <AlertCircle className="w-4 h-4" />
-                          <span className="text-xs font-medium">Out of Stock</span>
+                          <AlertCircle className="h-4 w-4" />
+                          <span className="text-xs font-medium">
+                            Out of Stock
+                          </span>
                         </div>
                       </div>
                     )}
 
                     {/* SKU if available */}
                     {variant.sku && (
-                      <span className="text-xs text-gray-500 mt-1">
+                      <span className="mt-1 text-xs text-gray-500">
                         SKU: {variant.sku}
                       </span>
                     )}
@@ -178,14 +196,16 @@ export function VariantSelector({
 
       {/* Selected variants summary */}
       {Object.keys(localSelectedVariants).length > 0 && (
-        <div className="p-4 bg-gray-50 rounded-lg">
-          <h5 className="font-medium text-gray-900 mb-3">Selected Options</h5>
+        <div className="rounded-lg bg-gray-50 p-4">
+          <h5 className="mb-3 font-medium text-gray-900">Selected Options</h5>
           <div className="space-y-2">
             {Object.entries(localSelectedVariants).map(([type, value]) => {
-              const variant = variants.find(v => v.type === type && v.value === value)
+              const variant = variants.find(
+                v => v.type === type && v.value === value
+              )
               return (
                 <div key={type} className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 capitalize">
+                  <span className="text-sm capitalize text-gray-600">
                     {getVariantTypeDisplayName(type)}:
                   </span>
                   <div className="flex items-center gap-2">
@@ -204,7 +224,7 @@ export function VariantSelector({
 
             {/* Total price if different from base */}
             {showPricing && getSelectedVariantPrice() !== basePrice && (
-              <div className="pt-2 border-t border-gray-200">
+              <div className="border-t border-gray-200 pt-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-900">
                     Variant Price:
@@ -223,16 +243,18 @@ export function VariantSelector({
       {Object.values(localSelectedVariants).length > 0 && (
         <div className="text-sm text-gray-600">
           {Object.entries(localSelectedVariants).every(([type, value]) => {
-            const variant = variants.find(v => v.type === type && v.value === value)
+            const variant = variants.find(
+              v => v.type === type && v.value === value
+            )
             return variant && isVariantAvailable(variant)
           }) ? (
             <div className="flex items-center gap-2 text-green-600">
-              <Check className="w-4 h-4" />
+              <Check className="h-4 w-4" />
               <span>Selected options are available</span>
             </div>
           ) : (
             <div className="flex items-center gap-2 text-red-600">
-              <AlertCircle className="w-4 h-4" />
+              <AlertCircle className="h-4 w-4" />
               <span>Some selected options are out of stock</span>
             </div>
           )}

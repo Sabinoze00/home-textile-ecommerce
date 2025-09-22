@@ -6,13 +6,13 @@ export default function AllProductsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="border-b bg-white">
+        <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-textile-navy mb-4">
+            <h1 className="mb-4 text-3xl font-bold text-textile-navy md:text-4xl">
               All Products
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="mx-auto max-w-2xl text-lg text-gray-600">
               Browse our complete collection of premium home textiles and decor
             </p>
           </div>
@@ -20,14 +20,12 @@ export default function AllProductsPage() {
       </div>
 
       {/* Content Section */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            Coming Soon
-          </h2>
-          <p className="text-gray-600 mb-8">
-            We're working hard to bring you our complete product catalog.
-            In the meantime, explore our categories to find what you need.
+          <h2 className="mb-4 text-2xl font-bold text-gray-800">Coming Soon</h2>
+          <p className="mb-8 text-gray-600">
+            We're working hard to bring you our complete product catalog. In the
+            meantime, explore our categories to find what you need.
           </p>
 
           <Link href="/">

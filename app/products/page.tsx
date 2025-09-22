@@ -38,7 +38,8 @@ interface ProductsPageProps {
 
 export const metadata: Metadata = {
   title: 'Products | Home Textile Store',
-  description: 'Browse our collection of premium home textiles including sheets, duvet covers, towels and more.',
+  description:
+    'Browse our collection of premium home textiles including sheets, duvet covers, towels and more.',
 }
 
 async function getProducts(searchParams: Record<string, any>) {
@@ -60,9 +61,12 @@ async function getProducts(searchParams: Record<string, any>) {
   })
 
   try {
-    const response = await fetch(`${baseUrl}/api/products?${params.toString()}`, {
-      cache: 'no-store', // Disable cache for fresh data
-    })
+    const response = await fetch(
+      `${baseUrl}/api/products?${params.toString()}`,
+      {
+        cache: 'no-store', // Disable cache for fresh data
+      }
+    )
 
     if (!response.ok) {
       throw new Error('Failed to fetch products')
@@ -71,7 +75,17 @@ async function getProducts(searchParams: Record<string, any>) {
     return response.json()
   } catch (error) {
     console.error('Error fetching products:', error)
-    return { data: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0, hasNext: false, hasPrev: false } }
+    return {
+      data: [],
+      pagination: {
+        page: 1,
+        limit: 20,
+        total: 0,
+        totalPages: 0,
+        hasNext: false,
+        hasPrev: false,
+      },
+    }
   }
 }
 
@@ -107,7 +121,9 @@ function generateProductListingStructuredData(
           '@type': 'Product',
           name: product.name,
           url: `${baseUrl}/products/${product.slug}`,
-          image: product.images?.[0]?.url ? `${baseUrl}${product.images[0].url}` : undefined,
+          image: product.images?.[0]?.url
+            ? `${baseUrl}${product.images[0].url}`
+            : undefined,
           offers: {
             '@type': 'Offer',
             price: product.price.toString(),
@@ -115,14 +131,18 @@ function generateProductListingStructuredData(
             availability: product.inStock
               ? 'https://schema.org/InStock'
               : 'https://schema.org/OutOfStock',
-          }
-        }
-      }))
-    }
+          },
+        },
+      })),
+    },
   }
 }
 
-async function ProductsContent({ searchParams }: { searchParams: Record<string, any> }) {
+async function ProductsContent({
+  searchParams,
+}: {
+  searchParams: Record<string, any>
+}) {
   const initialData = await getProducts(searchParams)
   const structuredData = generateProductListingStructuredData(
     initialData.data,
@@ -148,13 +168,13 @@ async function ProductsContent({ searchParams }: { searchParams: Record<string, 
 
 function ProductsLoadingSkeleton() {
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <Skeleton className="h-10 w-64 mb-4" />
+        <Skeleton className="mb-4 h-10 w-64" />
         <Skeleton className="h-6 w-96" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
         {/* Filters Sidebar Skeleton */}
         <div className="lg:col-span-1">
           <div className="space-y-6">
@@ -173,21 +193,24 @@ function ProductsLoadingSkeleton() {
 
         {/* Products Content Skeleton */}
         <div className="lg:col-span-3">
-          <Skeleton className="h-4 w-48 mb-6" />
+          <Skeleton className="mb-6 h-4 w-48" />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 9 }).map((_, index) => (
-              <div key={index} className="bg-white rounded-lg overflow-hidden animate-pulse">
+              <div
+                key={index}
+                className="animate-pulse overflow-hidden rounded-lg bg-white"
+              >
                 <Skeleton className="aspect-square w-full" />
-                <div className="p-4 space-y-3">
+                <div className="space-y-3 p-4">
                   <Skeleton className="h-3 w-1/3" />
                   <Skeleton className="h-4 w-3/4" />
                   <Skeleton className="h-3 w-1/2" />
                   <Skeleton className="h-5 w-1/4" />
                   <div className="flex gap-2">
-                    <Skeleton className="w-6 h-6 rounded-full" />
-                    <Skeleton className="w-6 h-6 rounded-full" />
-                    <Skeleton className="w-6 h-6 rounded-full" />
+                    <Skeleton className="h-6 w-6 rounded-full" />
+                    <Skeleton className="h-6 w-6 rounded-full" />
+                    <Skeleton className="h-6 w-6 rounded-full" />
                   </div>
                 </div>
               </div>
@@ -201,7 +224,15 @@ function ProductsLoadingSkeleton() {
 
 export default function ProductsPage({ searchParams }: ProductsPageProps) {
   // Parse search params to proper types
-  const usp = new URLSearchParams(Object.entries(searchParams).flatMap(([k,v]) => v === undefined ? [] : Array.isArray(v) ? v.map(val => [k, val]) : [[k, v]] ) as [string,string][])
+  const usp = new URLSearchParams(
+    Object.entries(searchParams).flatMap(([k, v]) =>
+      v === undefined
+        ? []
+        : Array.isArray(v)
+          ? v.map(val => [k, val])
+          : [[k, v]]
+    ) as [string, string][]
+  )
   const parsedParams = parseSearchParams(usp)
 
   return (

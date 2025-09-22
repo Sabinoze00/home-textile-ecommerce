@@ -57,7 +57,7 @@ export function ColorPicker({
 }: ColorPickerProps) {
   if (!colors || colors.length === 0) return null
 
-  const colorVariants = colors.filter((variant) => variant.type === 'color')
+  const colorVariants = colors.filter(variant => variant.type === 'color')
 
   if (colorVariants.length === 0) return null
 
@@ -88,24 +88,31 @@ export function ColorPicker({
         <span className="text-sm font-medium text-gray-700">Color:</span>
       )}
       <div className={cn('flex gap-1.5', mode === 'full' && 'gap-2')}>
-        {colorVariants.map((color) => {
+        {colorVariants.map(color => {
           const isSelected = selectedColor === color.value
           const colorValue = getColorValue(color.value)
-          const isLight = ['#ffffff', '#fffff0', '#f9f7f2', '#f5f5dc', '#f5f3f0', '#d1d5db'].includes(colorValue.toLowerCase())
+          const isLight = [
+            '#ffffff',
+            '#fffff0',
+            '#f9f7f2',
+            '#f5f5dc',
+            '#f5f3f0',
+            '#d1d5db',
+          ].includes(colorValue.toLowerCase())
 
           return (
             <button
               key={color.id}
               type="button"
               onClick={() => handleColorClick(color)}
-              onKeyDown={(e) => handleKeyDown(e, color)}
+              onKeyDown={e => handleKeyDown(e, color)}
               className={cn(
                 'relative rounded-full border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-textile-navy focus:ring-offset-2',
                 sizeClasses[size],
                 isSelected
-                  ? 'border-textile-navy shadow-md scale-110'
-                  : 'border-gray-300 hover:border-gray-400 hover:scale-105',
-                !color.inStock && 'opacity-50 cursor-not-allowed'
+                  ? 'scale-110 border-textile-navy shadow-md'
+                  : 'border-gray-300 hover:scale-105 hover:border-gray-400',
+                !color.inStock && 'cursor-not-allowed opacity-50'
               )}
               style={{ backgroundColor: colorValue }}
               title={color.name || color.value}
@@ -125,7 +132,7 @@ export function ColorPicker({
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div
                     className={cn(
-                      'w-2 h-2 rounded-full',
+                      'h-2 w-2 rounded-full',
                       isLight ? 'bg-gray-600' : 'bg-white'
                     )}
                   />
@@ -135,7 +142,7 @@ export function ColorPicker({
               {/* Out of stock indicator */}
               {!color.inStock && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-0.5 h-full bg-red-500 rotate-45 rounded-full" />
+                  <div className="h-full w-0.5 rotate-45 rounded-full bg-red-500" />
                 </div>
               )}
             </button>
@@ -144,8 +151,9 @@ export function ColorPicker({
       </div>
 
       {mode === 'full' && selectedColor && (
-        <span className="text-sm text-gray-600 ml-2">
-          {colorVariants.find((c) => c.value === selectedColor)?.name || selectedColor}
+        <span className="ml-2 text-sm text-gray-600">
+          {colorVariants.find(c => c.value === selectedColor)?.name ||
+            selectedColor}
         </span>
       )}
     </div>

@@ -3,7 +3,11 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ProductFilters } from '@/components/product/ProductFilters'
 import { ProductGrid } from '@/components/product/ProductGrid'
-import { ProductFilters as ProductFiltersType, Product, PaginatedResponse } from '@/types'
+import {
+  ProductFilters as ProductFiltersType,
+  Product,
+  PaginatedResponse,
+} from '@/types'
 import { parseSearchParams, buildSearchParams } from '@/lib/utils'
 
 interface ProductsPageClientProps {
@@ -11,23 +15,53 @@ interface ProductsPageClientProps {
   initialSearchParams: Record<string, any>
 }
 
-export function ProductsPageClient({ initialData, initialSearchParams }: ProductsPageClientProps) {
+export function ProductsPageClient({
+  initialData,
+  initialSearchParams,
+}: ProductsPageClientProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
   // Parse current URL search params into filters
   const currentFilters: ProductFiltersType = {
-    categories: initialSearchParams.category ? [initialSearchParams.category] : undefined,
-    priceRange: (initialSearchParams.minPrice || initialSearchParams.maxPrice) ? {
-      min: initialSearchParams.minPrice ? parseInt(initialSearchParams.minPrice) : 0,
-      max: initialSearchParams.maxPrice ? parseInt(initialSearchParams.maxPrice) : 500
-    } : undefined,
-    colors: initialSearchParams.colors ? initialSearchParams.colors.split(',') : undefined,
-    sizes: initialSearchParams.sizes ? initialSearchParams.sizes.split(',') : undefined,
-    materials: initialSearchParams.materials ? initialSearchParams.materials.split(',') : undefined,
-    ratings: initialSearchParams.rating ? [parseInt(initialSearchParams.rating)] : undefined,
-    inStock: initialSearchParams.inStock === 'true' ? true : initialSearchParams.inStock === 'false' ? false : undefined,
-    onSale: initialSearchParams.onSale === 'true' ? true : initialSearchParams.onSale === 'false' ? false : undefined,
+    categories: initialSearchParams.category
+      ? [initialSearchParams.category]
+      : undefined,
+    priceRange:
+      initialSearchParams.minPrice || initialSearchParams.maxPrice
+        ? {
+            min: initialSearchParams.minPrice
+              ? parseInt(initialSearchParams.minPrice)
+              : 0,
+            max: initialSearchParams.maxPrice
+              ? parseInt(initialSearchParams.maxPrice)
+              : 500,
+          }
+        : undefined,
+    colors: initialSearchParams.colors
+      ? initialSearchParams.colors.split(',')
+      : undefined,
+    sizes: initialSearchParams.sizes
+      ? initialSearchParams.sizes.split(',')
+      : undefined,
+    materials: initialSearchParams.materials
+      ? initialSearchParams.materials.split(',')
+      : undefined,
+    ratings: initialSearchParams.rating
+      ? [parseInt(initialSearchParams.rating)]
+      : undefined,
+    inStock:
+      initialSearchParams.inStock === 'true'
+        ? true
+        : initialSearchParams.inStock === 'false'
+          ? false
+          : undefined,
+    onSale:
+      initialSearchParams.onSale === 'true'
+        ? true
+        : initialSearchParams.onSale === 'false'
+          ? false
+          : undefined,
     sortBy: initialSearchParams.sortBy || 'name',
     sortOrder: initialSearchParams.sortOrder || 'asc',
   }
@@ -36,11 +70,26 @@ export function ProductsPageClient({ initialData, initialSearchParams }: Product
   const availableFilters = {
     categories: [
       { id: 'sheets', name: 'Sheets', value: 'sheets', count: 12 },
-      { id: 'duvet-covers', name: 'Duvet Covers', value: 'duvet-covers', count: 8 },
-      { id: 'quilts-coverlets', name: 'Quilts & Coverlets', value: 'quilts-coverlets', count: 6 },
+      {
+        id: 'duvet-covers',
+        name: 'Duvet Covers',
+        value: 'duvet-covers',
+        count: 8,
+      },
+      {
+        id: 'quilts-coverlets',
+        name: 'Quilts & Coverlets',
+        value: 'quilts-coverlets',
+        count: 6,
+      },
       { id: 'comforters', name: 'Comforters', value: 'comforters', count: 10 },
       { id: 'bath', name: 'Bath', value: 'bath', count: 15 },
-      { id: 'blankets-throws', name: 'Blankets & Throws', value: 'blankets-throws', count: 9 },
+      {
+        id: 'blankets-throws',
+        name: 'Blankets & Throws',
+        value: 'blankets-throws',
+        count: 9,
+      },
       { id: 'kids', name: 'Kids', value: 'kids', count: 7 },
       { id: 'home-decor', name: 'Home Decor', value: 'home-decor', count: 5 },
     ],
@@ -58,7 +107,12 @@ export function ProductsPageClient({ initialData, initialSearchParams }: Product
       { id: 'full', name: 'Full', value: 'Full', count: 15 },
       { id: 'queen', name: 'Queen', value: 'Queen', count: 30 },
       { id: 'king', name: 'King', value: 'King', count: 25 },
-      { id: 'california-king', name: 'California King', value: 'California King', count: 8 },
+      {
+        id: 'california-king',
+        name: 'California King',
+        value: 'California King',
+        count: 8,
+      },
     ],
     materials: [
       { id: 'cotton', name: 'Cotton', value: 'Cotton', count: 35 },
@@ -67,7 +121,7 @@ export function ProductsPageClient({ initialData, initialSearchParams }: Product
       { id: 'microfiber', name: 'Microfiber', value: 'Microfiber', count: 10 },
       { id: 'silk', name: 'Silk', value: 'Silk', count: 5 },
     ],
-    priceRange: { min: 0, max: 500 }
+    priceRange: { min: 0, max: 500 },
   }
 
   const handleFiltersChange = (newFilters: ProductFiltersType) => {
@@ -82,7 +136,10 @@ export function ProductsPageClient({ initialData, initialSearchParams }: Product
 
     // Add filter parameters
     if (newFilters.categories?.length) {
-      urlParams.set('category', newFilters.categories[0])
+      const firstCategory = newFilters.categories[0]
+      if (firstCategory) {
+        urlParams.set('category', firstCategory)
+      }
     }
 
     if (newFilters.priceRange) {
@@ -132,9 +189,9 @@ export function ProductsPageClient({ initialData, initialSearchParams }: Product
   }
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-textile-navy mb-4">
+        <h1 className="mb-4 text-3xl font-bold text-textile-navy md:text-4xl">
           All Products
         </h1>
         <p className="text-lg text-gray-600">
@@ -142,7 +199,7 @@ export function ProductsPageClient({ initialData, initialSearchParams }: Product
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
         {/* Filters Sidebar */}
         <div className="lg:col-span-1">
           <ProductFilters
@@ -157,7 +214,8 @@ export function ProductsPageClient({ initialData, initialSearchParams }: Product
           {/* Results count */}
           <div className="mb-6">
             <p className="text-sm text-gray-600">
-              Showing {initialData.data.length} of {initialData.pagination.total} products
+              Showing {initialData.data.length} of{' '}
+              {initialData.pagination.total} products
             </p>
           </div>
 
@@ -171,20 +229,21 @@ export function ProductsPageClient({ initialData, initialSearchParams }: Product
                 {initialData.pagination.hasPrev && (
                   <a
                     href={`/products?${new URLSearchParams({ ...initialSearchParams, page: String(initialData.pagination.page - 1) }).toString()}`}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                    className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                   >
                     Previous
                   </a>
                 )}
 
                 <span className="px-4 py-2 text-sm font-medium text-gray-700">
-                  Page {initialData.pagination.page} of {initialData.pagination.totalPages}
+                  Page {initialData.pagination.page} of{' '}
+                  {initialData.pagination.totalPages}
                 </span>
 
                 {initialData.pagination.hasNext && (
                   <a
                     href={`/products?${new URLSearchParams({ ...initialSearchParams, page: String(initialData.pagination.page + 1) }).toString()}`}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                    className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                   >
                     Next
                   </a>

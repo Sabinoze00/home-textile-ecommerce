@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Eye, EyeOff, Github, UserPlus } from 'lucide-react'
+import { Github, Mail, UserPlus } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -24,20 +24,15 @@ export function SignUpForm({ className, redirectTo }: SignUpFormProps) {
   const callbackUrl = redirectTo || searchParams.get('callbackUrl') || '/'
 
   const [isLoading, setIsLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
   } = useForm<SignUpData>({
     resolver: zodResolver(SignUpSchema),
   })
-
-  const password = watch('password')
 
   const onSubmit = async (data: SignUpData) => {
     setIsLoading(true)
@@ -56,7 +51,7 @@ export function SignUpForm({ className, redirectTo }: SignUpFormProps) {
         setError('Failed to send verification email. Please try again.')
       } else {
         setError(null)
-        alert(`Welcome ${data.firstName}! Check your email for a verification link.`)
+        alert(`Welcome ${data.name}! Check your email for a verification link.`)
       }
     } catch (err) {
       setError('An error occurred during registration. Please try again.')
@@ -129,45 +124,28 @@ export function SignUpForm({ className, redirectTo }: SignUpFormProps) {
         </div>
       </div>
 
-      {/* Registration Form */}
+      {/* Magic Link Registration Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Name Fields */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label htmlFor="firstName" className="text-sm font-medium">
-              First Name
-            </label>
-            <Input
-              id="firstName"
-              placeholder="John"
-              {...register('firstName')}
-              className={errors.firstName ? 'border-red-500' : ''}
-            />
-            {errors.firstName && (
-              <p className="text-sm text-red-500">{errors.firstName.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="lastName" className="text-sm font-medium">
-              Last Name
-            </label>
-            <Input
-              id="lastName"
-              placeholder="Doe"
-              {...register('lastName')}
-              className={errors.lastName ? 'border-red-500' : ''}
-            />
-            {errors.lastName && (
-              <p className="text-sm text-red-500">{errors.lastName.message}</p>
-            )}
-          </div>
+        {/* Name */}
+        <div className="space-y-2">
+          <label htmlFor="name" className="text-sm font-medium">
+            Full Name
+          </label>
+          <Input
+            id="name"
+            placeholder="John Doe"
+            {...register('name')}
+            className={errors.name ? 'border-red-500' : ''}
+          />
+          {errors.name && (
+            <p className="text-sm text-red-500">{errors.name.message}</p>
+          )}
         </div>
 
         {/* Email */}
         <div className="space-y-2">
           <label htmlFor="email" className="text-sm font-medium">
-            Email
+            Email Address
           </label>
           <Input
             id="email"
@@ -181,77 +159,20 @@ export function SignUpForm({ className, redirectTo }: SignUpFormProps) {
           )}
         </div>
 
-        {/* Password */}
-        <div className="space-y-2">
-          <label htmlFor="password" className="text-sm font-medium">
-            Password
-          </label>
-          <div className="relative">
-            <Input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Create a strong password"
-              {...register('password')}
-              className={errors.password ? 'border-red-500 pr-10' : 'pr-10'}
-            />
-            <button
-              type="button"
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4 text-gray-400" />
-              ) : (
-                <Eye className="h-4 w-4 text-gray-400" />
-              )}
-            </button>
+        {/* Magic Link Info */}
+        <div className="flex items-start space-x-2 rounded-md border border-blue-200 bg-blue-50 p-3">
+          <Mail className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
+          <div className="text-sm text-blue-800">
+            <p className="font-medium">Secure Magic Link Registration</p>
+            <p className="text-blue-600">
+              We'll send you a secure link to create your account. No password
+              required!
+            </p>
           </div>
-          {errors.password && (
-            <p className="text-sm text-red-500">{errors.password.message}</p>
-          )}
-          {password && password.length > 0 && (
-            <div className="text-xs text-gray-500">
-              Password strength: {
-                password.length >= 12 ? 'Strong' :
-                password.length >= 8 ? 'Medium' :
-                'Weak'
-              }
-            </div>
-          )}
-        </div>
-
-        {/* Confirm Password */}
-        <div className="space-y-2">
-          <label htmlFor="confirmPassword" className="text-sm font-medium">
-            Confirm Password
-          </label>
-          <div className="relative">
-            <Input
-              id="confirmPassword"
-              type={showConfirmPassword ? 'text' : 'password'}
-              placeholder="Confirm your password"
-              {...register('confirmPassword')}
-              className={errors.confirmPassword ? 'border-red-500 pr-10' : 'pr-10'}
-            />
-            <button
-              type="button"
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              {showConfirmPassword ? (
-                <EyeOff className="h-4 w-4 text-gray-400" />
-              ) : (
-                <Eye className="h-4 w-4 text-gray-400" />
-              )}
-            </button>
-          </div>
-          {errors.confirmPassword && (
-            <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
-          )}
         </div>
 
         {error && (
-          <div className="p-3 text-sm text-red-500 bg-red-50 border border-red-200 rounded-md">
+          <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-500">
             {error}
           </div>
         )}
@@ -269,8 +190,8 @@ export function SignUpForm({ className, redirectTo }: SignUpFormProps) {
         </div>
 
         <Button type="submit" className="w-full" disabled={isLoading}>
-          <UserPlus className="mr-2 h-4 w-4" />
-          {isLoading ? 'Creating account...' : 'Create account'}
+          <Mail className="mr-2 h-4 w-4" />
+          {isLoading ? 'Sending magic link...' : 'Send magic link'}
         </Button>
       </form>
 

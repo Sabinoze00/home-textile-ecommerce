@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { Eye, EyeOff, Github, Mail } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -175,7 +176,7 @@ export function SignInForm({ className, redirectTo }: SignInFormProps) {
         </div>
 
         {error && (
-          <div className="p-3 text-sm text-red-500 bg-red-50 border border-red-200 rounded-md">
+          <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-500">
             {error}
           </div>
         )}
@@ -185,7 +186,6 @@ export function SignInForm({ className, redirectTo }: SignInFormProps) {
           {isLoading ? 'Sending...' : 'Send magic link'}
         </Button>
       </form>
-
 
       {/* Sign Up Link */}
       <div className="text-center text-sm">

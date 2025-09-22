@@ -3,6 +3,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { Product, ProductVariant, CartItem } from '@/types'
+import { calculateCartTotals, CART_CONSTANTS } from '@/lib/utils'
 
 interface CartStore {
   items: CartItem[]
@@ -17,10 +18,6 @@ interface CartStore {
   clearCart: () => void
   getItem: (productId: string, variantId?: string) => CartItem | undefined
 }
-
-const TAX_RATE = 0.08 // 8% tax rate
-const SHIPPING_THRESHOLD = 75 // Free shipping over $75
-const SHIPPING_COST = 9.99
 
 export const useCart = create<CartStore>()(
   persist(
@@ -49,11 +46,8 @@ export const useCart = create<CartStore>()(
 
           set((state) => {
             const newItems = [...state.items, newItem]
-            const subtotal = newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
             const itemCount = newItems.reduce((sum, item) => sum + item.quantity, 0)
-            const tax = subtotal * TAX_RATE
-            const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
-            const total = subtotal + tax + shipping
+            const { subtotal, total } = calculateCartTotals(newItems)
 
             return {
               items: newItems,
@@ -68,11 +62,8 @@ export const useCart = create<CartStore>()(
       removeItem: (itemId: string) => {
         set((state) => {
           const newItems = state.items.filter(item => item.id !== itemId)
-          const subtotal = newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
           const itemCount = newItems.reduce((sum, item) => sum + item.quantity, 0)
-          const tax = subtotal * TAX_RATE
-          const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
-          const total = subtotal + tax + shipping
+          const { subtotal, total } = calculateCartTotals(newItems)
 
           return {
             items: newItems,
@@ -93,11 +84,8 @@ export const useCart = create<CartStore>()(
           const newItems = state.items.map(item =>
             item.id === itemId ? { ...item, quantity } : item
           )
-          const subtotal = newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
           const itemCount = newItems.reduce((sum, item) => sum + item.quantity, 0)
-          const tax = subtotal * TAX_RATE
-          const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
-          const total = subtotal + tax + shipping
+          const { subtotal, total } = calculateCartTotals(newItems)
 
           return {
             items: newItems,
@@ -133,11 +121,8 @@ export const useCart = create<CartStore>()(
       onRehydrateStorage: () => (state) => {
         if (state) {
           // Recalculate totals after hydration
-          const subtotal = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
           const itemCount = state.items.reduce((sum, item) => sum + item.quantity, 0)
-          const tax = subtotal * TAX_RATE
-          const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
-          const total = subtotal + tax + shipping
+          const { subtotal, total } = calculateCartTotals(state.items)
 
           state.subtotal = subtotal
           state.itemCount = itemCount

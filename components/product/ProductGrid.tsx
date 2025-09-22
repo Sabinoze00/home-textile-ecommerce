@@ -21,17 +21,17 @@ interface ProductGridProps {
 }
 
 const SkeletonCard = () => (
-  <div className="bg-white rounded-lg overflow-hidden">
+  <div className="overflow-hidden rounded-lg bg-white">
     <Skeleton className="aspect-square w-full" />
-    <div className="p-4 space-y-3">
+    <div className="space-y-3 p-4">
       <Skeleton className="h-3 w-1/3" />
       <Skeleton className="h-4 w-3/4" />
       <Skeleton className="h-3 w-1/2" />
       <Skeleton className="h-5 w-1/4" />
       <div className="flex gap-2">
-        <Skeleton className="w-6 h-6 rounded-full" />
-        <Skeleton className="w-6 h-6 rounded-full" />
-        <Skeleton className="w-6 h-6 rounded-full" />
+        <Skeleton className="h-6 w-6 rounded-full" />
+        <Skeleton className="h-6 w-6 rounded-full" />
+        <Skeleton className="h-6 w-6 rounded-full" />
       </div>
     </div>
   </div>
@@ -72,11 +72,11 @@ export function ProductGrid({
 
   if (!products || products.length === 0) {
     return (
-      <div className={cn('text-center py-16', className)}>
-        <div className="max-w-md mx-auto">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+      <div className={cn('py-16 text-center', className)}>
+        <div className="mx-auto max-w-md">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
             <svg
-              className="w-8 h-8 text-gray-400"
+              className="h-8 w-8 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -89,11 +89,12 @@ export function ProductGrid({
               />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <h3 className="mb-2 text-lg font-medium text-gray-900">
             {emptyMessage}
           </h3>
           <p className="text-gray-600">
-            Try adjusting your search or filters to find what you're looking for.
+            Try adjusting your search or filters to find what you're looking
+            for.
           </p>
         </div>
       </div>
@@ -102,7 +103,7 @@ export function ProductGrid({
 
   return (
     <div className={cn(getGridClasses(), className)}>
-      {products.map((product) => (
+      {products.map(product => (
         <ProductCard
           key={product.id}
           product={product}

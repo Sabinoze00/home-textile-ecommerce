@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useCart } from '@/hooks/use-cart'
 import { CartItem } from './CartItem'
 import { Button } from '@/components/ui/button'
+import { calculateCartTotals, CART_CONSTANTS } from '@/lib/utils'
 import {
   Dialog,
   DialogContent,
@@ -22,22 +23,21 @@ interface CartDrawerProps {
 export function CartDrawer({ children, className }: CartDrawerProps) {
   const { items, itemCount, subtotal, total, clearCart } = useCart()
 
-  const TAX_RATE = 0.08
-  const SHIPPING_THRESHOLD = 75
-  const SHIPPING_COST = 9.99
-
-  const tax = subtotal * TAX_RATE
-  const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
-  const freeShippingRemaining = SHIPPING_THRESHOLD - subtotal
+  const { tax, shipping, freeShippingRemaining, qualifiesForFreeShipping } =
+    calculateCartTotals(items)
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         {children || (
-          <Button variant="ghost" size="icon" className={cn("relative", className)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn('relative', className)}
+          >
             <ShoppingCart className="h-5 w-5" />
             {itemCount > 0 && (
-              <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-primary text-xs text-primary-foreground flex items-center justify-center">
+              <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
                 {itemCount}
               </span>
             )}
@@ -45,8 +45,8 @@ export function CartDrawer({ children, className }: CartDrawerProps) {
         )}
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-lg h-[90vh] flex flex-col p-0">
-        <DialogHeader className="px-6 py-4 border-b">
+      <DialogContent className="flex h-[90vh] flex-col p-0 sm:max-w-lg">
+        <DialogHeader className="border-b px-6 py-4">
           <DialogTitle className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5" />
             Shopping Cart ({itemCount} {itemCount === 1 ? 'item' : 'items'})
@@ -54,10 +54,12 @@ export function CartDrawer({ children, className }: CartDrawerProps) {
         </DialogHeader>
 
         {items.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-            <ShoppingCart className="h-16 w-16 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
-            <p className="text-gray-500 mb-6">Add some items to get started</p>
+          <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
+            <ShoppingCart className="mb-4 h-16 w-16 text-gray-400" />
+            <h3 className="mb-2 text-lg font-medium text-gray-900">
+              Your cart is empty
+            </h3>
+            <p className="mb-6 text-gray-500">Add some items to get started</p>
             <DialogTrigger asChild>
               <Button asChild>
                 <Link href="/products">Continue Shopping</Link>
@@ -67,25 +69,28 @@ export function CartDrawer({ children, className }: CartDrawerProps) {
         ) : (
           <>
             {/* Free Shipping Progress */}
-            {subtotal > 0 && subtotal < SHIPPING_THRESHOLD && (
-              <div className="px-6 py-4 bg-green-50 border-b">
+            {subtotal > 0 && !qualifiesForFreeShipping && (
+              <div className="border-b bg-green-50 px-6 py-4">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-green-800">
-                    Add ${freeShippingRemaining.toFixed(2)} more for free shipping!
+                    Add ${freeShippingRemaining.toFixed(2)} more for free
+                    shipping!
                   </span>
                 </div>
-                <div className="mt-2 bg-green-200 rounded-full h-2">
+                <div className="mt-2 h-2 rounded-full bg-green-200">
                   <div
-                    className="bg-green-600 h-2 rounded-full transition-all"
-                    style={{ width: `${Math.min((subtotal / SHIPPING_THRESHOLD) * 100, 100)}%` }}
+                    className="h-2 rounded-full bg-green-600 transition-all"
+                    style={{
+                      width: `${Math.min((subtotal / CART_CONSTANTS.SHIPPING_THRESHOLD) * 100, 100)}%`,
+                    }}
                   />
                 </div>
               </div>
             )}
 
-            {subtotal >= SHIPPING_THRESHOLD && (
-              <div className="px-6 py-3 bg-green-100 border-b">
-                <p className="text-sm text-green-800 font-medium">
+            {qualifiesForFreeShipping && (
+              <div className="border-b bg-green-100 px-6 py-3">
+                <p className="text-sm font-medium text-green-800">
                   🎉 You qualified for free shipping!
                 </p>
               </div>
@@ -94,14 +99,14 @@ export function CartDrawer({ children, className }: CartDrawerProps) {
             {/* Cart Items */}
             <div className="flex-1 overflow-y-auto">
               <div className="px-6">
-                {items.map((item) => (
+                {items.map(item => (
                   <CartItem key={item.id} item={item} compact />
                 ))}
               </div>
             </div>
 
             {/* Cart Summary */}
-            <div className="border-t bg-gray-50 p-6 space-y-4">
+            <div className="space-y-4 border-t bg-gray-50 p-6">
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Subtotal</span>
@@ -115,7 +120,7 @@ export function CartDrawer({ children, className }: CartDrawerProps) {
                   <span className="text-gray-600">Shipping</span>
                   <span>
                     {shipping === 0 ? (
-                      <span className="text-green-600 font-medium">Free</span>
+                      <span className="font-medium text-green-600">Free</span>
                     ) : (
                       `$${shipping.toFixed(2)}`
                     )}

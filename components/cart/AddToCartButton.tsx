@@ -7,18 +7,24 @@ import { useCart } from '@/hooks/use-cart'
 import { Button, ButtonProps } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-interface AddToCartButtonProps extends Omit<ButtonProps, 'onClick'> {
+interface AddToCartButtonProps
+  extends Omit<ButtonProps, 'onClick' | 'variant'> {
   product: Product
-  variant?: ProductVariant
+  productVariant?: ProductVariant
   quantity?: number
   showIcon?: boolean
   successText?: string
-  onAddToCart?: (product: Product, variant?: ProductVariant, quantity?: number) => void
+  onAddToCart?: (
+    product: Product,
+    variant?: ProductVariant,
+    quantity?: number
+  ) => void
+  variant?: ButtonProps['variant']
 }
 
 export function AddToCartButton({
   product,
-  variant,
+  productVariant,
   quantity = 1,
   showIcon = true,
   successText = 'Added!',
@@ -34,8 +40,12 @@ export function AddToCartButton({
   const [isAdding, setIsAdding] = useState(false)
   const [justAdded, setJustAdded] = useState(false)
 
-  const isOutOfStock = !product.inStock || (variant && variant.inStock === false)
-  const existingItem = getItem(product.id.toString(), variant?.id.toString())
+  const isOutOfStock =
+    !product.inStock || (productVariant && productVariant.inStock === false)
+  const existingItem = getItem(
+    product.id.toString(),
+    productVariant?.id.toString()
+  )
   const isDisabled = disabled || isOutOfStock || isAdding
 
   const handleAddToCart = async () => {
@@ -46,9 +56,9 @@ export function AddToCartButton({
     try {
       // Call custom onAddToCart if provided
       if (onAddToCart) {
-        onAddToCart(product, variant, quantity)
+        onAddToCart(product, productVariant, quantity)
       } else {
-        addItem(product, variant, quantity)
+        addItem(product, productVariant, quantity)
       }
 
       // Show success state
@@ -91,9 +101,7 @@ export function AddToCartButton({
       {...props}
     >
       {showIcon && getButtonIcon() && (
-        <span className="mr-2">
-          {getButtonIcon()}
-        </span>
+        <span className="mr-2">{getButtonIcon()}</span>
       )}
       {getButtonText()}
     </Button>
@@ -101,13 +109,14 @@ export function AddToCartButton({
 }
 
 // Variant for icon-only button (useful for product cards)
-interface AddToCartIconButtonProps extends Omit<AddToCartButtonProps, 'children' | 'showIcon'> {
+interface AddToCartIconButtonProps
+  extends Omit<AddToCartButtonProps, 'children' | 'showIcon'> {
   tooltipText?: string
 }
 
 export function AddToCartIconButton({
   product,
-  variant,
+  productVariant,
   quantity = 1,
   onAddToCart,
   className,
@@ -117,7 +126,7 @@ export function AddToCartIconButton({
   return (
     <AddToCartButton
       product={product}
-      variant={variant}
+      productVariant={productVariant}
       quantity={quantity}
       onAddToCart={onAddToCart}
       showIcon={false}
@@ -131,7 +140,8 @@ export function AddToCartIconButton({
 }
 
 // Variant with quantity selector
-interface AddToCartWithQuantityProps extends Omit<AddToCartButtonProps, 'quantity'> {
+interface AddToCartWithQuantityProps
+  extends Omit<AddToCartButtonProps, 'quantity'> {
   defaultQuantity?: number
   maxQuantity?: number
   showQuantitySelector?: boolean
@@ -139,7 +149,7 @@ interface AddToCartWithQuantityProps extends Omit<AddToCartButtonProps, 'quantit
 
 export function AddToCartWithQuantity({
   product,
-  variant,
+  productVariant,
   defaultQuantity = 1,
   maxQuantity = 10,
   showQuantitySelector = true,
@@ -158,7 +168,7 @@ export function AddToCartWithQuantity({
   return (
     <div className={cn('flex items-center space-x-2', className)}>
       {showQuantitySelector && (
-        <div className="flex items-center border border-gray-300 rounded-md">
+        <div className="flex items-center rounded-md border border-gray-300">
           <Button
             variant="ghost"
             size="sm"
@@ -168,7 +178,7 @@ export function AddToCartWithQuantity({
           >
             <Plus className="h-3 w-3 rotate-45" />
           </Button>
-          <span className="min-w-[2rem] text-center px-2 text-sm font-medium">
+          <span className="min-w-[2rem] px-2 text-center text-sm font-medium">
             {quantity}
           </span>
           <Button
@@ -185,7 +195,7 @@ export function AddToCartWithQuantity({
 
       <AddToCartButton
         product={product}
-        variant={variant}
+        productVariant={productVariant}
         quantity={quantity}
         onAddToCart={onAddToCart}
         className="flex-1"

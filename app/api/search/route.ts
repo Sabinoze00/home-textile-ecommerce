@@ -67,14 +67,14 @@ function generateFuzzyVariations(query: string): string[] {
 
   // Add variations with common typos/substitutions
   const commonSubstitutions: { [key: string]: string[] } = {
-    'sheet': ['sheets', 'sheeting'],
-    'pillow': ['pillows', 'cushion', 'cushions'],
-    'blanket': ['blankets', 'throw', 'throws'],
-    'cover': ['covers', 'covering'],
-    'duvet': ['duvets', 'comforter', 'comforters'],
-    'towel': ['towels', 'bath'],
-    'cotton': ['100% cotton', 'pure cotton'],
-    'linen': ['100% linen', 'pure linen'],
+    sheet: ['sheets', 'sheeting'],
+    pillow: ['pillows', 'cushion', 'cushions'],
+    blanket: ['blankets', 'throw', 'throws'],
+    cover: ['covers', 'covering'],
+    duvet: ['duvets', 'comforter', 'comforters'],
+    towel: ['towels', 'bath'],
+    cotton: ['100% cotton', 'pure cotton'],
+    linen: ['100% linen', 'pure linen'],
   }
 
   words.forEach(word => {
@@ -109,36 +109,39 @@ export async function GET(request: NextRequest) {
     const queryVariations = generateFuzzyVariations(validatedParams.q)
 
     // Create comprehensive search conditions
-    const searchConditions = []
+    const searchConditions: any[] = []
 
     // For each variation, create search conditions
     queryVariations.forEach(variation => {
       searchConditions.push(
         // Exact name match (highest priority)
         {
-          name: { equals: variation, mode: 'insensitive' as const }
+          name: { equals: variation, mode: 'insensitive' as const },
         },
         // Name contains
         {
-          name: { contains: variation, mode: 'insensitive' as const }
+          name: { contains: variation, mode: 'insensitive' as const },
         },
         // Short description contains
         {
-          shortDescription: { contains: variation, mode: 'insensitive' as const }
+          shortDescription: {
+            contains: variation,
+            mode: 'insensitive' as const,
+          },
         },
         // Description contains
         {
-          description: { contains: variation, mode: 'insensitive' as const }
+          description: { contains: variation, mode: 'insensitive' as const },
         },
         // Tags array contains
         {
-          tags: { hasSome: [variation] }
+          tags: { hasSome: [variation] },
         },
         // Category name contains
         {
           category: {
-            name: { contains: variation, mode: 'insensitive' as const }
-          }
+            name: { contains: variation, mode: 'insensitive' as const },
+          },
         }
       )
     })
@@ -169,7 +172,7 @@ export async function GET(request: NextRequest) {
     })
 
     // Calculate relevance scores and transform data
-    const scoredResults = products.map((product) => {
+    const scoredResults = products.map(product => {
       let maxScore = 0
       let matchField = 'name'
       const queryLower = validatedParams.q.toLowerCase()
@@ -182,10 +185,20 @@ export async function GET(request: NextRequest) {
 
       // Check for exact matches first
       if (productNameLower === queryLower) {
-        maxScore = calculateRelevanceScore(product, validatedParams.q, true, 'name')
+        maxScore = calculateRelevanceScore(
+          product,
+          validatedParams.q,
+          true,
+          'name'
+        )
         matchField = 'name'
       } else if (productNameLower.includes(queryLower)) {
-        const score = calculateRelevanceScore(product, validatedParams.q, false, 'name')
+        const score = calculateRelevanceScore(
+          product,
+          validatedParams.q,
+          false,
+          'name'
+        )
         if (score > maxScore) {
           maxScore = score
           matchField = 'name'
@@ -193,7 +206,12 @@ export async function GET(request: NextRequest) {
       }
 
       if (categoryNameLower.includes(queryLower)) {
-        const score = calculateRelevanceScore(product, validatedParams.q, categoryNameLower === queryLower, 'category')
+        const score = calculateRelevanceScore(
+          product,
+          validatedParams.q,
+          categoryNameLower === queryLower,
+          'category'
+        )
         if (score > maxScore) {
           maxScore = score
           matchField = 'category'
@@ -201,7 +219,12 @@ export async function GET(request: NextRequest) {
       }
 
       if (shortDescLower.includes(queryLower)) {
-        const score = calculateRelevanceScore(product, validatedParams.q, false, 'shortDescription')
+        const score = calculateRelevanceScore(
+          product,
+          validatedParams.q,
+          false,
+          'shortDescription'
+        )
         if (score > maxScore) {
           maxScore = score
           matchField = 'shortDescription'
@@ -209,7 +232,12 @@ export async function GET(request: NextRequest) {
       }
 
       if (descLower.includes(queryLower)) {
-        const score = calculateRelevanceScore(product, validatedParams.q, false, 'description')
+        const score = calculateRelevanceScore(
+          product,
+          validatedParams.q,
+          false,
+          'description'
+        )
         if (score > maxScore) {
           maxScore = score
           matchField = 'description'
@@ -217,8 +245,18 @@ export async function GET(request: NextRequest) {
       }
 
       // Check tags
-      if (product.tags && product.tags.some((tag: string) => tag.toLowerCase().includes(queryLower))) {
-        const score = calculateRelevanceScore(product, validatedParams.q, false, 'tags')
+      if (
+        product.tags &&
+        product.tags.some((tag: string) =>
+          tag.toLowerCase().includes(queryLower)
+        )
+      ) {
+        const score = calculateRelevanceScore(
+          product,
+          validatedParams.q,
+          false,
+          'tags'
+        )
         if (score > maxScore) {
           maxScore = score
           matchField = 'tags'
@@ -229,7 +267,12 @@ export async function GET(request: NextRequest) {
       queryVariations.forEach(variation => {
         const variationLower = variation.toLowerCase()
         if (productNameLower.includes(variationLower)) {
-          const score = calculateRelevanceScore(product, variation, productNameLower === variationLower, 'name')
+          const score = calculateRelevanceScore(
+            product,
+            variation,
+            productNameLower === variationLower,
+            'name'
+          )
           if (score > maxScore) {
             maxScore = score
             matchField = 'name'
@@ -243,7 +286,9 @@ export async function GET(request: NextRequest) {
         slug: product.slug,
         shortDescription: product.shortDescription,
         price: Number(product.price),
-        originalPrice: product.originalPrice ? Number(product.originalPrice) : undefined,
+        originalPrice: product.originalPrice
+          ? Number(product.originalPrice)
+          : undefined,
         image: product.images[0]?.url,
         category: {
           name: product.category.name,
@@ -254,8 +299,8 @@ export async function GET(request: NextRequest) {
         isBestseller: product.isBestseller,
         isNew: product.isNew,
         colors: product.variants
-          .filter((v) => v.type === 'color')
-          .map((v) => v.value)
+          .filter(v => v.type === 'color')
+          .map(v => v.value)
           .slice(0, 3),
         relevanceScore: maxScore,
         matchField,
@@ -270,7 +315,7 @@ export async function GET(request: NextRequest) {
 
     // Get enhanced search suggestions with fuzzy matching
     const suggestionConditions = queryVariations.map(variation => ({
-      name: { contains: variation, mode: 'insensitive' as const }
+      name: { contains: variation, mode: 'insensitive' as const },
     }))
 
     const suggestions = await prisma.product.findMany({
@@ -313,7 +358,7 @@ export async function GET(request: NextRequest) {
 
     // Get enhanced category suggestions with fuzzy matching
     const categorySuggestionConditions = queryVariations.map(variation => ({
-      name: { contains: variation, mode: 'insensitive' as const }
+      name: { contains: variation, mode: 'insensitive' as const },
     }))
 
     const categorySuggestions = await prisma.category.findMany({
@@ -330,12 +375,12 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       results: searchResults,
-      suggestions: scoredSuggestions.map((s) => ({
+      suggestions: scoredSuggestions.map(s => ({
         type: 'product' as const,
         name: s.name,
         href: `/products/${s.slug}`,
       })),
-      categories: categorySuggestions.map((c) => ({
+      categories: categorySuggestions.map(c => ({
         type: 'category' as const,
         name: c.name,
         href: `/products?category=${c.slug}`,

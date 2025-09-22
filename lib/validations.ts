@@ -52,6 +52,28 @@ export const PaginationParamsSchema = z.object({
   limit: z.coerce.number().min(1).max(100).optional().default(20),
 })
 
+// Orders Query Parameters Schema
+export const OrdersQueryParamsSchema = z.object({
+  page: z.coerce.number().min(1).optional().default(1),
+  limit: z.coerce.number().min(1).max(100).optional().default(20),
+  status: z
+    .enum([
+      'PENDING',
+      'CONFIRMED',
+      'PROCESSING',
+      'SHIPPED',
+      'DELIVERED',
+      'CANCELLED',
+      'REFUNDED',
+    ])
+    .optional(),
+  sortBy: z
+    .enum(['createdAt', 'total', 'status', 'orderNumber'])
+    .optional()
+    .default('createdAt'),
+  sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
+})
+
 // Product Search Query Schema
 export const ProductSearchQuerySchema = z.object({
   q: z.string().min(1, 'Search query is required'),
@@ -104,18 +126,11 @@ export const FilterOptionSchema = z.object({
 //  Authentication Schemas
 export const SignInSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
 })
 
 export const SignUpSchema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
+  name: z.string().min(1, 'Name is required'),
   email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
 })
 
 // Address Schema
@@ -141,12 +156,14 @@ export const CheckoutSchema = z.object({
 
 // Order Schema
 export const OrderSchema = z.object({
-  items: z.array(z.object({
-    productId: z.string(),
-    variantId: z.string().optional(),
-    quantity: z.number().min(1),
-    price: z.number().min(0),
-  })),
+  items: z.array(
+    z.object({
+      productId: z.string(),
+      variantId: z.string().optional(),
+      quantity: z.number().min(1),
+      price: z.number().min(0),
+    })
+  ),
   shippingAddress: AddressSchema,
   billingAddress: AddressSchema,
   notes: z.string().optional(),
@@ -156,11 +173,17 @@ export const OrderSchema = z.object({
 export type ProductFilters = z.infer<typeof ProductFiltersSchema>
 export type SearchParams = z.infer<typeof SearchParamsSchema>
 export type PaginationParams = z.infer<typeof PaginationParamsSchema>
+export type OrdersQueryParams = z.infer<typeof OrdersQueryParamsSchema>
 export type ProductSearchQuery = z.infer<typeof ProductSearchQuerySchema>
 export type ProductVariant = z.infer<typeof ProductVariantSchema>
 export type ProductReview = z.infer<typeof ProductReviewSchema>
-export type ApiResponse<T = any> = z.infer<typeof ApiResponseSchema> & { data?: T }
-export type PaginatedResponse<T = any> = Omit<z.infer<typeof PaginatedResponseSchema>, 'data'> & { data: T[] }
+export type ApiResponse<T = any> = z.infer<typeof ApiResponseSchema> & {
+  data?: T
+}
+export type PaginatedResponse<T = any> = Omit<
+  z.infer<typeof PaginatedResponseSchema>,
+  'data'
+> & { data: T[] }
 export type FilterOption = z.infer<typeof FilterOptionSchema>
 export type SignInData = z.infer<typeof SignInSchema>
 export type SignUpData = z.infer<typeof SignUpSchema>

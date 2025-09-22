@@ -27,7 +27,7 @@ interface SearchResult {
 
 export function SearchBar({
   className = '',
-  placeholder = 'Search for bedding, pillows, decor...'
+  placeholder = 'Search for bedding, pillows, decor...',
 }: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [isOpen, setIsOpen] = useState(false)
@@ -69,7 +69,10 @@ export function SearchBar({
   // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false)
       }
     }
@@ -113,10 +116,12 @@ export function SearchBar({
     }
   }
 
-  const allSuggestions = searchResults ? [
-    ...(searchResults.suggestions || []),
-    ...(searchResults.categories || [])
-  ] : []
+  const allSuggestions = searchResults
+    ? [
+        ...(searchResults.suggestions || []),
+        ...(searchResults.categories || []),
+      ]
+    : []
 
   return (
     <div ref={searchRef} className={cn('relative', className)}>
@@ -130,7 +135,7 @@ export function SearchBar({
             value={searchTerm}
             onChange={handleInputChange}
             onFocus={handleInputFocus}
-            className="pl-10 pr-10 w-full h-10 border-gray-300 focus:border-textile-navy focus:ring-textile-navy"
+            className="h-10 w-full border-gray-300 pl-10 pr-10 focus:border-textile-navy focus:ring-textile-navy"
           />
           {searchTerm && (
             <button
@@ -151,30 +156,32 @@ export function SearchBar({
 
       {/* Search Dropdown */}
       {isOpen && (searchResults || searchTerm) && (
-        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-96 overflow-y-auto">
+        <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-96 overflow-y-auto rounded-md border border-gray-200 bg-white shadow-lg">
           {searchResults && (
             <>
               {/* Quick Results */}
               {searchResults.results && searchResults.results.length > 0 && (
                 <div className="p-2">
-                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wide px-2 py-1">
+                  <div className="px-2 py-1 text-xs font-medium uppercase tracking-wide text-gray-500">
                     Products
                   </div>
                   {searchResults.results.slice(0, 3).map((product, index) => (
                     <button
                       key={index}
-                      onClick={() => handleSuggestionClick(`/products/${product.slug}`)}
-                      className="w-full text-left px-2 py-2 hover:bg-gray-50 rounded flex items-center gap-3"
+                      onClick={() =>
+                        handleSuggestionClick(`/products/${product.slug}`)
+                      }
+                      className="flex w-full items-center gap-3 rounded px-2 py-2 text-left hover:bg-gray-50"
                     >
                       {product.image && (
                         <img
                           src={product.image}
                           alt={product.name}
-                          className="w-8 h-8 object-cover rounded"
+                          className="h-8 w-8 rounded object-cover"
                         />
                       )}
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-gray-900 truncate">
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-sm font-medium text-gray-900">
                           {product.name}
                         </div>
                         <div className="text-xs text-gray-500">
@@ -189,19 +196,23 @@ export function SearchBar({
               {/* Suggestions */}
               {allSuggestions.length > 0 && (
                 <div className="border-t border-gray-100 p-2">
-                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wide px-2 py-1">
+                  <div className="px-2 py-1 text-xs font-medium uppercase tracking-wide text-gray-500">
                     Suggestions
                   </div>
                   {allSuggestions.slice(0, 5).map((suggestion, index) => (
                     <button
                       key={index}
                       onClick={() => handleSuggestionClick(suggestion.href)}
-                      className="w-full text-left px-2 py-2 hover:bg-gray-50 rounded flex items-center gap-2"
+                      className="flex w-full items-center gap-2 rounded px-2 py-2 text-left hover:bg-gray-50"
                     >
-                      <Search className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-700">{suggestion.name}</span>
-                      <span className="text-xs text-gray-500 ml-auto">
-                        {suggestion.type === 'category' ? 'Category' : 'Product'}
+                      <Search className="h-4 w-4 text-gray-400" />
+                      <span className="text-sm text-gray-700">
+                        {suggestion.name}
+                      </span>
+                      <span className="ml-auto text-xs text-gray-500">
+                        {suggestion.type === 'category'
+                          ? 'Category'
+                          : 'Product'}
                       </span>
                     </button>
                   ))}
@@ -212,8 +223,12 @@ export function SearchBar({
               {searchResults.total > 3 && (
                 <div className="border-t border-gray-100 p-2">
                   <button
-                    onClick={() => handleSuggestionClick(`/products?q=${encodeURIComponent(searchTerm)}`)}
-                    className="w-full text-left px-2 py-2 hover:bg-gray-50 rounded text-sm text-textile-navy font-medium"
+                    onClick={() =>
+                      handleSuggestionClick(
+                        `/products?q=${encodeURIComponent(searchTerm)}`
+                      )
+                    }
+                    className="w-full rounded px-2 py-2 text-left text-sm font-medium text-textile-navy hover:bg-gray-50"
                   >
                     View all {searchResults.total} results for "{searchTerm}"
                   </button>
@@ -225,9 +240,11 @@ export function SearchBar({
           {/* No Results */}
           {searchResults && searchResults.total === 0 && (
             <div className="p-4 text-center text-gray-500">
-              <Search className="w-6 h-6 mx-auto mb-2 text-gray-400" />
+              <Search className="mx-auto mb-2 h-6 w-6 text-gray-400" />
               <div className="text-sm">No results found for "{searchTerm}"</div>
-              <div className="text-xs mt-1">Try different keywords or browse our categories</div>
+              <div className="mt-1 text-xs">
+                Try different keywords or browse our categories
+              </div>
             </div>
           )}
         </div>

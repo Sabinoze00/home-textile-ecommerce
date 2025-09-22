@@ -1,7 +1,17 @@
 import Link from 'next/link'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, Truck, Award, Palette } from 'lucide-react'
+import {
+  Facebook,
+  Instagram,
+  Twitter,
+  Youtube,
+  Mail,
+  Phone,
+  Truck,
+  Award,
+  Palette,
+} from 'lucide-react'
 
 const helpLinks = [
   { name: 'Contact Us', href: '/contact' },
@@ -65,15 +75,17 @@ export function Footer() {
     <footer className="bg-textile-cream">
       {/* Value Propositions */}
       <div className="border-b border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {valueProps.map((prop) => (
+        <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+            {valueProps.map(prop => (
               <div key={prop.title} className="flex items-center space-x-4">
                 <div className="flex-shrink-0">
                   <prop.icon className="h-8 w-8 text-textile-navy" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-textile-navy">{prop.title}</h3>
+                  <h3 className="font-semibold text-textile-navy">
+                    {prop.title}
+                  </h3>
                   <p className="text-sm text-gray-600">{prop.description}</p>
                 </div>
               </div>
@@ -84,13 +96,13 @@ export function Footer() {
 
       {/* Newsletter Signup */}
       <div className="border-b border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="max-w-md mx-auto text-center">
-            <Mail className="h-8 w-8 text-textile-navy mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-textile-navy mb-2">
+        <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-md text-center">
+            <Mail className="mx-auto mb-4 h-8 w-8 text-textile-navy" />
+            <h3 className="mb-2 text-xl font-semibold text-textile-navy">
               Stay Cozy with Us
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="mb-6 text-gray-600">
               Get the latest on new arrivals, sales, and exclusive offers.
             </p>
             <div className="flex space-x-2">
@@ -108,17 +120,17 @@ export function Footer() {
       </div>
 
       {/* Main Footer Links */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
           {/* Help */}
           <div>
-            <h3 className="font-semibold text-textile-navy mb-4">Help</h3>
+            <h3 className="mb-4 font-semibold text-textile-navy">Help</h3>
             <ul className="space-y-2">
-              {helpLinks.map((link) => (
+              {helpLinks.map(link => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-600 hover:text-textile-navy transition-colors"
+                    className="text-sm text-gray-600 transition-colors hover:text-textile-navy"
                   >
                     {link.name}
                   </Link>
@@ -129,13 +141,13 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="font-semibold text-textile-navy mb-4">Resources</h3>
+            <h3 className="mb-4 font-semibold text-textile-navy">Resources</h3>
             <ul className="space-y-2">
-              {resourceLinks.map((link) => (
+              {resourceLinks.map(link => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-600 hover:text-textile-navy transition-colors"
+                    className="text-sm text-gray-600 transition-colors hover:text-textile-navy"
                   >
                     {link.name}
                   </Link>
@@ -146,13 +158,13 @@ export function Footer() {
 
           {/* About */}
           <div>
-            <h3 className="font-semibold text-textile-navy mb-4">About</h3>
+            <h3 className="mb-4 font-semibold text-textile-navy">About</h3>
             <ul className="space-y-2">
-              {aboutLinks.map((link) => (
+              {aboutLinks.map(link => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-600 hover:text-textile-navy transition-colors"
+                    className="text-sm text-gray-600 transition-colors hover:text-textile-navy"
                   >
                     {link.name}
                   </Link>
@@ -163,13 +175,15 @@ export function Footer() {
 
           {/* In the Press */}
           <div>
-            <h3 className="font-semibold text-textile-navy mb-4">In the Press</h3>
+            <h3 className="mb-4 font-semibold text-textile-navy">
+              In the Press
+            </h3>
             <ul className="space-y-2">
-              {pressLinks.map((link) => (
+              {pressLinks.map(link => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-600 hover:text-textile-navy transition-colors"
+                    className="text-sm text-gray-600 transition-colors hover:text-textile-navy"
                   >
                     {link.name}
                   </Link>
@@ -182,8 +196,8 @@ export function Footer() {
 
       {/* Bottom Footer */}
       <div className="border-t border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+        <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
             {/* Copyright */}
             <div className="text-sm text-gray-600">
               © 2024 Cozy Home. All rights reserved.
@@ -191,19 +205,31 @@ export function Footer() {
 
             {/* Social Media Links */}
             <div className="flex space-x-4">
-              <Link href="#" className="text-gray-600 hover:text-textile-navy transition-colors">
+              <Link
+                href="#"
+                className="text-gray-600 transition-colors hover:text-textile-navy"
+              >
                 <Facebook className="h-5 w-5" />
                 <span className="sr-only">Facebook</span>
               </Link>
-              <Link href="#" className="text-gray-600 hover:text-textile-navy transition-colors">
+              <Link
+                href="#"
+                className="text-gray-600 transition-colors hover:text-textile-navy"
+              >
                 <Instagram className="h-5 w-5" />
                 <span className="sr-only">Instagram</span>
               </Link>
-              <Link href="#" className="text-gray-600 hover:text-textile-navy transition-colors">
+              <Link
+                href="#"
+                className="text-gray-600 transition-colors hover:text-textile-navy"
+              >
                 <Twitter className="h-5 w-5" />
                 <span className="sr-only">Twitter</span>
               </Link>
-              <Link href="#" className="text-gray-600 hover:text-textile-navy transition-colors">
+              <Link
+                href="#"
+                className="text-gray-600 transition-colors hover:text-textile-navy"
+              >
                 <Youtube className="h-5 w-5" />
                 <span className="sr-only">YouTube</span>
               </Link>
@@ -211,10 +237,16 @@ export function Footer() {
 
             {/* Legal Links */}
             <div className="flex space-x-6 text-sm">
-              <Link href="/privacy" className="text-gray-600 hover:text-textile-navy transition-colors">
+              <Link
+                href="/privacy"
+                className="text-gray-600 transition-colors hover:text-textile-navy"
+              >
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="text-gray-600 hover:text-textile-navy transition-colors">
+              <Link
+                href="/terms"
+                className="text-gray-600 transition-colors hover:text-textile-navy"
+              >
                 Terms of Service
               </Link>
             </div>

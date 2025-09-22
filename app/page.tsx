@@ -5,17 +5,20 @@ import { ProductCarousel } from '@/components/product/ProductCarousel'
 
 export const metadata: Metadata = {
   title: 'Home Textile Store - Quality Bedding & Home Decor',
-  description: 'Discover premium bedding, comforters, sheets, and home textiles. Transform your space with our curated collection of quality home goods.',
+  description:
+    'Discover premium bedding, comforters, sheets, and home textiles. Transform your space with our curated collection of quality home goods.',
 }
 
 async function getBestSellingProducts() {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
   try {
-    const response = await fetch(`${baseUrl}/api/products?bestseller=true&limit=8`, {
-      cache: 'revalidate',
-      next: { revalidate: 3600 }, // Revalidate every hour
-    })
+    const response = await fetch(
+      `${baseUrl}/api/products?bestseller=true&limit=8`,
+      {
+        next: { revalidate: 3600 }, // Revalidate every hour
+      }
+    )
 
     if (!response.ok) {
       throw new Error('Failed to fetch best selling products')

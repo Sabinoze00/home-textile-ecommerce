@@ -2,11 +2,11 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export default function ProductDetailLoading() {
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
       {/* Breadcrumb */}
-      <Skeleton className="h-4 w-96 mb-8" />
+      <Skeleton className="mb-8 h-4 w-96" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
         {/* Product Images */}
         <div className="space-y-4">
           <Skeleton className="aspect-square w-full rounded-lg" />
@@ -27,7 +27,7 @@ export default function ProductDetailLoading() {
 
           {/* Product Name */}
           <div>
-            <Skeleton className="h-10 w-3/4 mb-2" />
+            <Skeleton className="mb-2 h-10 w-3/4" />
             <Skeleton className="h-6 w-full" />
           </div>
 
@@ -35,7 +35,7 @@ export default function ProductDetailLoading() {
           <div className="flex items-center gap-4">
             <div className="flex gap-1">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton key={i} className="w-5 h-5" />
+                <Skeleton key={i} className="h-5 w-5" />
               ))}
             </div>
             <Skeleton className="h-4 w-24" />
@@ -53,7 +53,7 @@ export default function ProductDetailLoading() {
             <Skeleton className="h-4 w-16" />
             <div className="flex gap-2">
               {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="w-8 h-8 rounded-full" />
+                <Skeleton key={i} className="h-8 w-8 rounded-full" />
               ))}
             </div>
           </div>
@@ -78,21 +78,21 @@ export default function ProductDetailLoading() {
           </div>
 
           {/* Product Details */}
-          <div className="border-t pt-6 space-y-4">
+          <div className="space-y-4 border-t pt-6">
             <div>
-              <Skeleton className="h-5 w-24 mb-2" />
-              <Skeleton className="h-4 w-full mb-2" />
-              <Skeleton className="h-4 w-full mb-2" />
+              <Skeleton className="mb-2 h-5 w-24" />
+              <Skeleton className="mb-2 h-4 w-full" />
+              <Skeleton className="mb-2 h-4 w-full" />
               <Skeleton className="h-4 w-3/4" />
             </div>
 
             <div>
-              <Skeleton className="h-5 w-32 mb-2" />
+              <Skeleton className="mb-2 h-5 w-32" />
               <div className="space-y-2">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="flex">
                     <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-4 w-32 ml-4" />
+                    <Skeleton className="ml-4 h-4 w-32" />
                   </div>
                 ))}
               </div>
@@ -103,17 +103,17 @@ export default function ProductDetailLoading() {
 
       {/* Related Products */}
       <div className="mt-16">
-        <div className="text-center mb-8">
-          <Skeleton className="h-8 w-48 mx-auto mb-4" />
-          <Skeleton className="h-5 w-96 mx-auto" />
+        <div className="mb-8 text-center">
+          <Skeleton className="mx-auto mb-4 h-8 w-48" />
+          <Skeleton className="mx-auto h-5 w-96" />
         </div>
 
         <div className="flex gap-6 overflow-hidden">
           {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="flex-none w-72">
-              <div className="bg-white rounded-lg overflow-hidden animate-pulse">
+            <div key={index} className="w-72 flex-none">
+              <div className="animate-pulse overflow-hidden rounded-lg bg-white">
                 <Skeleton className="aspect-square w-full" />
-                <div className="p-4 space-y-3">
+                <div className="space-y-3 p-4">
                   <Skeleton className="h-3 w-1/3" />
                   <Skeleton className="h-4 w-3/4" />
                   <Skeleton className="h-3 w-1/2" />

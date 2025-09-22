@@ -49,10 +49,55 @@ export function truncate(str: string, length: number): string {
   return str.slice(0, length) + '...'
 }
 
+// Cart utilities
+export const CART_CONSTANTS = {
+  TAX_RATE: 0.08, // 8% tax rate
+  SHIPPING_THRESHOLD: 75, // Free shipping over $75
+  SHIPPING_COST: 9.99,
+} as const
+
+export interface CartTotals {
+  subtotal: number
+  tax: number
+  shipping: number
+  total: number
+  freeShippingRemaining: number
+  qualifiesForFreeShipping: boolean
+}
+
+export function calculateCartTotals(
+  items: Array<{ price: number; quantity: number }>
+): CartTotals {
+  const subtotal = items.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  )
+  const tax = subtotal * CART_CONSTANTS.TAX_RATE
+  const shipping =
+    subtotal >= CART_CONSTANTS.SHIPPING_THRESHOLD
+      ? 0
+      : CART_CONSTANTS.SHIPPING_COST
+  const total = subtotal + tax + shipping
+  const freeShippingRemaining = Math.max(
+    0,
+    CART_CONSTANTS.SHIPPING_THRESHOLD - subtotal
+  )
+  const qualifiesForFreeShipping = subtotal >= CART_CONSTANTS.SHIPPING_THRESHOLD
+
+  return {
+    subtotal,
+    tax,
+    shipping,
+    total,
+    freeShippingRemaining,
+    qualifiesForFreeShipping,
+  }
+}
+
 export function getInitials(name: string): string {
   return name
     .split(' ')
-    .map((n) => n[0])
+    .map(n => n[0])
     .join('')
     .toUpperCase()
     .slice(0, 2)
@@ -98,7 +143,9 @@ export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 }
 
-export function getBreakpointValue(breakpoint: 'sm' | 'md' | 'lg' | 'xl' | '2xl'): number {
+export function getBreakpointValue(
+  breakpoint: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+): number {
   const breakpoints = {
     sm: 640,
     md: 768,
@@ -116,7 +163,10 @@ export function isMobile(): boolean {
 
 export function isTablet(): boolean {
   if (typeof window === 'undefined') return false
-  return window.innerWidth >= getBreakpointValue('md') && window.innerWidth < getBreakpointValue('lg')
+  return (
+    window.innerWidth >= getBreakpointValue('md') &&
+    window.innerWidth < getBreakpointValue('lg')
+  )
 }
 
 export function isDesktop(): boolean {
@@ -125,7 +175,10 @@ export function isDesktop(): boolean {
 }
 
 // Product-related utility functions
-export function calculateDiscountPercentage(originalPrice: number, salePrice: number): number {
+export function calculateDiscountPercentage(
+  originalPrice: number,
+  salePrice: number
+): number {
   return Math.round(((originalPrice - salePrice) / originalPrice) * 100)
 }
 
@@ -137,7 +190,11 @@ export function generateProductSlug(name: string): string {
   return slugify(name)
 }
 
-export function getImageUrl(url: string, width?: number, height?: number): string {
+export function getImageUrl(
+  url: string,
+  width?: number,
+  height?: number
+): string {
   // In a real app, you might want to use a service like Cloudinary or Vercel's image optimization
   if (width || height) {
     const params = new URLSearchParams()
@@ -154,7 +211,15 @@ export function getImageUrl(url: string, width?: number, height?: number): strin
   return url
 }
 
-export function sortProducts<T extends { name: string; price: number; rating?: { average: number }; createdAt: Date; isBestseller?: boolean }>(
+export function sortProducts<
+  T extends {
+    name: string
+    price: number
+    rating?: { average: number }
+    createdAt: Date
+    isBestseller?: boolean
+  },
+>(
   products: T[],
   sortBy: 'name' | 'price' | 'rating' | 'newest' | 'bestseller',
   sortOrder: 'asc' | 'desc' = 'asc'
@@ -183,17 +248,19 @@ export function sortProducts<T extends { name: string; price: number; rating?: {
   return sortOrder === 'desc' ? sorted.reverse() : sorted
 }
 
-export function filterProducts<T extends {
-  name: string
-  description: string
-  price: number
-  category: { slug: string }
-  variants?: { type: string; value: string }[]
-  rating?: { average: number }
-  inStock?: boolean
-  isOnSale?: boolean
-  tags?: string[]
-}>(
+export function filterProducts<
+  T extends {
+    name: string
+    description: string
+    price: number
+    category: { slug: string }
+    variants?: { type: string; value: string }[]
+    rating?: { average: number }
+    inStock?: boolean
+    isOnSale?: boolean
+    tags?: string[]
+  },
+>(
   products: T[],
   filters: {
     query?: string
@@ -206,7 +273,7 @@ export function filterProducts<T extends {
     onSale?: boolean
   }
 ): T[] {
-  return products.filter((product) => {
+  return products.filter(product => {
     // Text search
     if (filters.query) {
       const query = filters.query.toLowerCase()
@@ -221,14 +288,19 @@ export function filterProducts<T extends {
 
     // Price range filter
     if (filters.priceRange) {
-      if (product.price < filters.priceRange.min || product.price > filters.priceRange.max) {
+      if (
+        product.price < filters.priceRange.min ||
+        product.price > filters.priceRange.max
+      ) {
         return false
       }
     }
 
     // Color filter
     if (filters.colors && filters.colors.length > 0) {
-      const productColors = product.variants?.filter(v => v.type === 'color').map(v => v.value) || []
+      const productColors =
+        product.variants?.filter(v => v.type === 'color').map(v => v.value) ||
+        []
       if (!filters.colors.some(color => productColors.includes(color))) {
         return false
       }
@@ -236,14 +308,18 @@ export function filterProducts<T extends {
 
     // Size filter
     if (filters.sizes && filters.sizes.length > 0) {
-      const productSizes = product.variants?.filter(v => v.type === 'size').map(v => v.value) || []
+      const productSizes =
+        product.variants?.filter(v => v.type === 'size').map(v => v.value) || []
       if (!filters.sizes.some(size => productSizes.includes(size))) {
         return false
       }
     }
 
     // Rating filter
-    if (filters.rating && (!product.rating || product.rating.average < filters.rating)) {
+    if (
+      filters.rating &&
+      (!product.rating || product.rating.average < filters.rating)
+    ) {
       return false
     }
 
@@ -279,7 +355,9 @@ export function buildSearchParams(params: Record<string, any>): string {
   return searchParams.toString()
 }
 
-export function parseSearchParams(searchParams: URLSearchParams): Record<string, any> {
+export function parseSearchParams(
+  searchParams: URLSearchParams
+): Record<string, any> {
   const params: Record<string, any> = {}
 
   for (const [key, value] of searchParams.entries()) {
@@ -288,11 +366,15 @@ export function parseSearchParams(searchParams: URLSearchParams): Record<string,
       params[key] = value.split(',').filter(Boolean)
     }
     // Handle boolean values
-    else if (['inStock', 'onSale', 'featured', 'new', 'bestseller'].includes(key)) {
+    else if (
+      ['inStock', 'onSale', 'featured', 'new', 'bestseller'].includes(key)
+    ) {
       params[key] = value === 'true'
     }
     // Handle numeric values
-    else if (['minPrice', 'maxPrice', 'rating', 'page', 'limit'].includes(key)) {
+    else if (
+      ['minPrice', 'maxPrice', 'rating', 'page', 'limit'].includes(key)
+    ) {
       const num = Number(value)
       if (!isNaN(num)) params[key] = num
     }
@@ -303,4 +385,22 @@ export function parseSearchParams(searchParams: URLSearchParams): Record<string,
   }
 
   return params
+}
+
+// Order utilities
+export function generateOrderNumber(): string {
+  const timestamp = Date.now().toString()
+  const random = Math.random().toString(36).substring(2, 8).toUpperCase()
+  return `ORD-${timestamp.slice(-6)}-${random}`
+}
+
+export function formatOrderNumber(createdAt = new Date()): string {
+  return (
+    createdAt
+      .toISOString()
+      .replace(/[-:TZ.]/g, '')
+      .slice(0, 14) +
+    '-' +
+    Math.random().toString(36).slice(2, 6).toUpperCase()
+  )
 }

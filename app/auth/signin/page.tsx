@@ -7,7 +7,8 @@ import { SignInForm } from '@/components/auth/SignInForm'
 
 export const metadata: Metadata = {
   title: 'Sign In | Home Textile Store',
-  description: 'Sign in to your account to access your orders, wishlist, and more.',
+  description:
+    'Sign in to your account to access your orders, wishlist, and more.',
 }
 
 export default async function SignInPage({
@@ -23,7 +24,7 @@ export default async function SignInPage({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen flex-col justify-center bg-gray-50 py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/* Logo */}
         <Link href="/" className="flex justify-center">
@@ -41,7 +42,7 @@ export default async function SignInPage({
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
           <SignInForm redirectTo={searchParams.callbackUrl} />
         </div>
 
@@ -50,14 +51,14 @@ export default async function SignInPage({
           <div className="space-x-1">
             <Link
               href="/help"
-              className="text-gray-500 hover:text-gray-700 underline"
+              className="text-gray-500 underline hover:text-gray-700"
             >
               Need help?
             </Link>
             <span className="text-gray-300">•</span>
             <Link
               href="/contact"
-              className="text-gray-500 hover:text-gray-700 underline"
+              className="text-gray-500 underline hover:text-gray-700"
             >
               Contact us
             </Link>

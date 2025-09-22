@@ -51,7 +51,6 @@ async function getProduct(slug: string) {
 
   try {
     const response = await fetch(`${baseUrl}/api/products/${slug}`, {
-      cache: 'revalidate',
       next: { revalidate: 3600 },
     })
 
@@ -80,7 +79,7 @@ function generateProductStructuredData(product: any): ProductStructuredData {
     image: product.images?.map((img: any) => `${baseUrl}${img.url}`) || [],
     brand: {
       '@type': 'Brand',
-      name: 'Home Textile Store'
+      name: 'Home Textile Store',
     },
     offers: {
       '@type': 'Offer',
@@ -89,15 +88,17 @@ function generateProductStructuredData(product: any): ProductStructuredData {
       availability: product.inStock
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
-      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 30 days from now
-    }
+      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0], // 30 days from now
+    },
   }
 
   if (product.rating) {
     structuredData.aggregateRating = {
       '@type': 'AggregateRating',
       ratingValue: product.rating.average,
-      reviewCount: product.rating.count
+      reviewCount: product.rating.count,
     }
   }
 
@@ -106,20 +107,22 @@ function generateProductStructuredData(product: any): ProductStructuredData {
       '@type': 'Review',
       reviewRating: {
         '@type': 'Rating',
-        ratingValue: review.rating
+        ratingValue: review.rating,
       },
       author: {
         '@type': 'Person',
-        name: review.userName
+        name: review.userName,
       },
-      reviewBody: review.comment
+      reviewBody: review.comment,
     }))
   }
 
   return structuredData
 }
 
-export async function generateMetadata({ params }: ProductDetailPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: ProductDetailPageProps): Promise<Metadata> {
   const product = await getProduct(params.slug)
 
   if (!product) {
@@ -147,7 +150,6 @@ export async function generateMetadata({ params }: ProductDetailPageProps): Prom
   }
 }
 
-
 async function ProductDetailContent({ slug }: { slug: string }) {
   const product = await getProduct(slug)
 
@@ -172,10 +174,10 @@ async function ProductDetailContent({ slug }: { slug: string }) {
 
 function ProductDetailSkeleton() {
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <Skeleton className="h-4 w-96 mb-8" />
+    <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <Skeleton className="mb-8 h-4 w-96" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
         <div className="space-y-4">
           <Skeleton className="aspect-square w-full rounded-lg" />
           <div className="grid grid-cols-4 gap-4">
@@ -191,7 +193,7 @@ function ProductDetailSkeleton() {
             <Skeleton className="h-6 w-20 rounded-full" />
           </div>
           <div>
-            <Skeleton className="h-10 w-3/4 mb-2" />
+            <Skeleton className="mb-2 h-10 w-3/4" />
             <Skeleton className="h-6 w-full" />
           </div>
           <Skeleton className="h-6 w-48" />
@@ -200,7 +202,7 @@ function ProductDetailSkeleton() {
             <Skeleton className="h-4 w-16" />
             <div className="flex gap-2">
               {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="w-8 h-8 rounded-full" />
+                <Skeleton key={i} className="h-8 w-8 rounded-full" />
               ))}
             </div>
           </div>

@@ -49,12 +49,15 @@ const sortOptions = [
 export function ProductFilters({
   className,
   onFiltersChange,
-  availableFilters
+  availableFilters,
 }: ProductFiltersProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isOpen, setIsOpen] = useState(false)
-  const [expandedSections, setExpandedSections] = useState<string[]>(['category', 'price'])
+  const [expandedSections, setExpandedSections] = useState<string[]>([
+    'category',
+    'price',
+  ])
   const [filters, setFilters] = useState<ProductFiltersType>({})
 
   // Initialize filters from URL params
@@ -69,7 +72,7 @@ export function ProductFilters({
     if (minPrice || maxPrice) {
       urlFilters.priceRange = {
         min: minPrice ? parseFloat(minPrice) : 0,
-        max: maxPrice ? parseFloat(maxPrice) : 1000
+        max: maxPrice ? parseFloat(maxPrice) : 1000,
       }
     }
 
@@ -91,7 +94,9 @@ export function ProductFilters({
     const sortBy = searchParams.get('sortBy') as ProductFiltersType['sortBy']
     if (sortBy) urlFilters.sortBy = sortBy
 
-    const sortOrder = searchParams.get('sortOrder') as ProductFiltersType['sortOrder']
+    const sortOrder = searchParams.get(
+      'sortOrder'
+    ) as ProductFiltersType['sortOrder']
     if (sortOrder) urlFilters.sortOrder = sortOrder
 
     setFilters(urlFilters)
@@ -101,7 +106,10 @@ export function ProductFilters({
     const params = new URLSearchParams()
 
     if (newFilters.categories?.length) {
-      params.set('category', newFilters.categories[0])
+      const firstCategory = newFilters.categories[0]
+      if (firstCategory) {
+        params.set('category', firstCategory)
+      }
     }
 
     if (newFilters.priceRange) {
@@ -158,16 +166,19 @@ export function ProductFilters({
 
     handleFilterChange({
       ...filters,
-      [key]: newArray.length > 0 ? newArray : undefined
+      [key]: newArray.length > 0 ? newArray : undefined,
     })
   }
 
   const handleSortChange = (sortValue: string) => {
-    const [sortBy, sortOrder] = sortValue.split('-') as [ProductFiltersType['sortBy'], ProductFiltersType['sortOrder']]
+    const [sortBy, sortOrder] = sortValue.split('-') as [
+      ProductFiltersType['sortBy'],
+      ProductFiltersType['sortOrder'],
+    ]
     handleFilterChange({
       ...filters,
       sortBy: sortBy === 'newest' ? 'newest' : sortBy,
-      sortOrder: sortBy === 'newest' ? undefined : sortOrder
+      sortOrder: sortBy === 'newest' ? undefined : sortOrder,
     })
   }
 
@@ -200,7 +211,7 @@ export function ProductFilters({
   const FilterSection = ({
     title,
     sectionId,
-    children
+    children,
   }: {
     title: string
     sectionId: string
@@ -212,13 +223,13 @@ export function ProductFilters({
       <div className="border-b border-gray-200 pb-4">
         <button
           onClick={() => toggleSection(sectionId)}
-          className="flex items-center justify-between w-full py-2 text-left"
+          className="flex w-full items-center justify-between py-2 text-left"
         >
           <span className="font-medium text-gray-900">{title}</span>
           {isExpanded ? (
-            <ChevronUp className="w-4 h-4 text-gray-500" />
+            <ChevronUp className="h-4 w-4 text-gray-500" />
           ) : (
-            <ChevronDown className="w-4 h-4 text-gray-500" />
+            <ChevronDown className="h-4 w-4 text-gray-500" />
           )}
         </button>
         {isExpanded && <div className="mt-3 space-y-2">{children}</div>}
@@ -229,34 +240,38 @@ export function ProductFilters({
   return (
     <div className={cn('', className)}>
       {/* Mobile Filter Toggle */}
-      <div className="lg:hidden mb-4">
+      <div className="mb-4 lg:hidden">
         <Button
           variant="outline"
           onClick={() => setIsOpen(!isOpen)}
           className="w-full justify-between"
         >
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4" />
+            <Filter className="h-4 w-4" />
             Filters
             {getActiveFiltersCount() > 0 && (
-              <Badge variant="secondary">
-                {getActiveFiltersCount()}
-              </Badge>
+              <Badge variant="secondary">{getActiveFiltersCount()}</Badge>
             )}
           </div>
-          {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          {isOpen ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
         </Button>
       </div>
 
       {/* Filter Panel */}
-      <div className={cn(
-        'bg-white border border-gray-200 rounded-lg p-6',
-        'lg:block',
-        isOpen ? 'block' : 'hidden lg:block'
-      )}>
+      <div
+        className={cn(
+          'rounded-lg border border-gray-200 bg-white p-6',
+          'lg:block',
+          isOpen ? 'block' : 'hidden lg:block'
+        )}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="font-semibold text-lg text-gray-900">Filters</h3>
+        <div className="mb-6 flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
           {getActiveFiltersCount() > 0 && (
             <Button
               variant="ghost"
@@ -274,10 +289,10 @@ export function ProductFilters({
           <FilterSection title="Sort" sectionId="sort">
             <select
               value={`${filters.sortBy || 'name'}-${filters.sortOrder || 'asc'}`}
-              onChange={(e) => handleSortChange(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-textile-navy focus:border-textile-navy"
+              onChange={e => handleSortChange(e.target.value)}
+              className="w-full rounded-md border border-gray-300 p-2 focus:border-textile-navy focus:ring-2 focus:ring-textile-navy"
             >
-              {sortOptions.map((option) => (
+              {sortOptions.map(option => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -288,17 +303,26 @@ export function ProductFilters({
           {/* Categories */}
           {availableFilters?.categories && (
             <FilterSection title="Category" sectionId="category">
-              {availableFilters.categories.map((category) => (
-                <label key={category.id} className="flex items-center gap-2 cursor-pointer">
+              {availableFilters.categories.map(category => (
+                <label
+                  key={category.id}
+                  className="flex cursor-pointer items-center gap-2"
+                >
                   <input
                     type="checkbox"
-                    checked={filters.categories?.includes(category.value) || false}
-                    onChange={() => toggleArrayFilter('categories', category.value)}
+                    checked={
+                      filters.categories?.includes(category.value) || false
+                    }
+                    onChange={() =>
+                      toggleArrayFilter('categories', category.value)
+                    }
                     className="rounded border-gray-300 text-textile-navy focus:ring-textile-navy"
                   />
                   <span className="text-sm text-gray-700">{category.name}</span>
                   {category.count && (
-                    <span className="text-xs text-gray-500">({category.count})</span>
+                    <span className="text-xs text-gray-500">
+                      ({category.count})
+                    </span>
                   )}
                 </label>
               ))}
@@ -314,29 +338,37 @@ export function ProductFilters({
                     type="number"
                     placeholder="Min"
                     value={filters.priceRange?.min || ''}
-                    onChange={(e) => handleFilterChange({
-                      ...filters,
-                      priceRange: {
-                        ...filters.priceRange,
-                        min: e.target.value ? parseFloat(e.target.value) : 0,
-                        max: filters.priceRange?.max || availableFilters.priceRange.max
-                      }
-                    })}
-                    className="w-full p-2 border border-gray-300 rounded text-sm"
+                    onChange={e =>
+                      handleFilterChange({
+                        ...filters,
+                        priceRange: {
+                          ...filters.priceRange,
+                          min: e.target.value ? parseFloat(e.target.value) : 0,
+                          max:
+                            filters.priceRange?.max ||
+                            availableFilters.priceRange.max,
+                        },
+                      })
+                    }
+                    className="w-full rounded border border-gray-300 p-2 text-sm"
                   />
                   <span className="text-gray-500">to</span>
                   <input
                     type="number"
                     placeholder="Max"
                     value={filters.priceRange?.max || ''}
-                    onChange={(e) => handleFilterChange({
-                      ...filters,
-                      priceRange: {
-                        min: filters.priceRange?.min || 0,
-                        max: e.target.value ? parseFloat(e.target.value) : availableFilters.priceRange.max
-                      }
-                    })}
-                    className="w-full p-2 border border-gray-300 rounded text-sm"
+                    onChange={e =>
+                      handleFilterChange({
+                        ...filters,
+                        priceRange: {
+                          min: filters.priceRange?.min || 0,
+                          max: e.target.value
+                            ? parseFloat(e.target.value)
+                            : availableFilters.priceRange.max,
+                        },
+                      })
+                    }
+                    className="w-full rounded border border-gray-300 p-2 text-sm"
                   />
                 </div>
               </div>
@@ -346,8 +378,11 @@ export function ProductFilters({
           {/* Colors */}
           {availableFilters?.colors && (
             <FilterSection title="Colors" sectionId="colors">
-              {availableFilters.colors.map((color) => (
-                <label key={color.id} className="flex items-center gap-2 cursor-pointer">
+              {availableFilters.colors.map(color => (
+                <label
+                  key={color.id}
+                  className="flex cursor-pointer items-center gap-2"
+                >
                   <input
                     type="checkbox"
                     checked={filters.colors?.includes(color.value) || false}
@@ -356,7 +391,9 @@ export function ProductFilters({
                   />
                   <span className="text-sm text-gray-700">{color.name}</span>
                   {color.count && (
-                    <span className="text-xs text-gray-500">({color.count})</span>
+                    <span className="text-xs text-gray-500">
+                      ({color.count})
+                    </span>
                   )}
                 </label>
               ))}
@@ -366,8 +403,11 @@ export function ProductFilters({
           {/* Sizes */}
           {availableFilters?.sizes && (
             <FilterSection title="Sizes" sectionId="sizes">
-              {availableFilters.sizes.map((size) => (
-                <label key={size.id} className="flex items-center gap-2 cursor-pointer">
+              {availableFilters.sizes.map(size => (
+                <label
+                  key={size.id}
+                  className="flex cursor-pointer items-center gap-2"
+                >
                   <input
                     type="checkbox"
                     checked={filters.sizes?.includes(size.value) || false}
@@ -376,7 +416,9 @@ export function ProductFilters({
                   />
                   <span className="text-sm text-gray-700">{size.name}</span>
                   {size.count && (
-                    <span className="text-xs text-gray-500">({size.count})</span>
+                    <span className="text-xs text-gray-500">
+                      ({size.count})
+                    </span>
                   )}
                 </label>
               ))}
@@ -386,17 +428,26 @@ export function ProductFilters({
           {/* Materials */}
           {availableFilters?.materials && (
             <FilterSection title="Materials" sectionId="materials">
-              {availableFilters.materials.map((material) => (
-                <label key={material.id} className="flex items-center gap-2 cursor-pointer">
+              {availableFilters.materials.map(material => (
+                <label
+                  key={material.id}
+                  className="flex cursor-pointer items-center gap-2"
+                >
                   <input
                     type="checkbox"
-                    checked={filters.materials?.includes(material.value) || false}
-                    onChange={() => toggleArrayFilter('materials', material.value)}
+                    checked={
+                      filters.materials?.includes(material.value) || false
+                    }
+                    onChange={() =>
+                      toggleArrayFilter('materials', material.value)
+                    }
                     className="rounded border-gray-300 text-textile-navy focus:ring-textile-navy"
                   />
                   <span className="text-sm text-gray-700">{material.name}</span>
                   {material.count && (
-                    <span className="text-xs text-gray-500">({material.count})</span>
+                    <span className="text-xs text-gray-500">
+                      ({material.count})
+                    </span>
                   )}
                 </label>
               ))}
@@ -405,26 +456,30 @@ export function ProductFilters({
 
           {/* Availability */}
           <FilterSection title="Availability" sectionId="availability">
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex cursor-pointer items-center gap-2">
               <input
                 type="checkbox"
                 checked={filters.inStock || false}
-                onChange={(e) => handleFilterChange({
-                  ...filters,
-                  inStock: e.target.checked || undefined
-                })}
+                onChange={e =>
+                  handleFilterChange({
+                    ...filters,
+                    inStock: e.target.checked || undefined,
+                  })
+                }
                 className="rounded border-gray-300 text-textile-navy focus:ring-textile-navy"
               />
               <span className="text-sm text-gray-700">In Stock Only</span>
             </label>
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex cursor-pointer items-center gap-2">
               <input
                 type="checkbox"
                 checked={filters.onSale || false}
-                onChange={(e) => handleFilterChange({
-                  ...filters,
-                  onSale: e.target.checked || undefined
-                })}
+                onChange={e =>
+                  handleFilterChange({
+                    ...filters,
+                    onSale: e.target.checked || undefined,
+                  })
+                }
                 className="rounded border-gray-300 text-textile-navy focus:ring-textile-navy"
               />
               <span className="text-sm text-gray-700">On Sale</span>
@@ -434,10 +489,10 @@ export function ProductFilters({
 
         {/* Active Filters */}
         {getActiveFiltersCount() > 0 && (
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <h4 className="font-medium text-gray-900 mb-3">Active Filters</h4>
+          <div className="mt-6 border-t border-gray-200 pt-6">
+            <h4 className="mb-3 font-medium text-gray-900">Active Filters</h4>
             <div className="flex flex-wrap gap-2">
-              {filters.categories?.map((category) => (
+              {filters.categories?.map(category => (
                 <Badge
                   key={category}
                   variant="secondary"
@@ -445,12 +500,12 @@ export function ProductFilters({
                 >
                   {category}
                   <X
-                    className="w-3 h-3 cursor-pointer"
+                    className="h-3 w-3 cursor-pointer"
                     onClick={() => toggleArrayFilter('categories', category)}
                   />
                 </Badge>
               ))}
-              {filters.colors?.map((color) => (
+              {filters.colors?.map(color => (
                 <Badge
                   key={color}
                   variant="secondary"
@@ -458,12 +513,12 @@ export function ProductFilters({
                 >
                   {color}
                   <X
-                    className="w-3 h-3 cursor-pointer"
+                    className="h-3 w-3 cursor-pointer"
                     onClick={() => toggleArrayFilter('colors', color)}
                   />
                 </Badge>
               ))}
-              {filters.sizes?.map((size) => (
+              {filters.sizes?.map(size => (
                 <Badge
                   key={size}
                   variant="secondary"
@@ -471,12 +526,12 @@ export function ProductFilters({
                 >
                   {size}
                   <X
-                    className="w-3 h-3 cursor-pointer"
+                    className="h-3 w-3 cursor-pointer"
                     onClick={() => toggleArrayFilter('sizes', size)}
                   />
                 </Badge>
               ))}
-              {filters.materials?.map((material) => (
+              {filters.materials?.map(material => (
                 <Badge
                   key={material}
                   variant="secondary"
@@ -484,7 +539,7 @@ export function ProductFilters({
                 >
                   {material}
                   <X
-                    className="w-3 h-3 cursor-pointer"
+                    className="h-3 w-3 cursor-pointer"
                     onClick={() => toggleArrayFilter('materials', material)}
                   />
                 </Badge>

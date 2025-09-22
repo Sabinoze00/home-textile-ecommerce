@@ -7,7 +7,8 @@ import { SignUpForm } from '@/components/auth/SignUpForm'
 
 export const metadata: Metadata = {
   title: 'Sign Up | Home Textile Store',
-  description: 'Create your account to start shopping for premium home textiles.',
+  description:
+    'Create your account to start shopping for premium home textiles.',
 }
 
 export default async function SignUpPage({
@@ -23,7 +24,7 @@ export default async function SignUpPage({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen flex-col justify-center bg-gray-50 py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/* Logo */}
         <Link href="/" className="flex justify-center">
@@ -41,16 +42,16 @@ export default async function SignUpPage({
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
           <SignUpForm redirectTo={searchParams.callbackUrl} />
         </div>
 
         {/* Benefits */}
-        <div className="mt-6 bg-white rounded-lg shadow-sm p-4">
-          <h3 className="text-sm font-medium text-gray-900 mb-2">
+        <div className="mt-6 rounded-lg bg-white p-4 shadow-sm">
+          <h3 className="mb-2 text-sm font-medium text-gray-900">
             Why create an account?
           </h3>
-          <ul className="text-xs text-gray-600 space-y-1">
+          <ul className="space-y-1 text-xs text-gray-600">
             <li>• Track your orders and delivery status</li>
             <li>• Save your favorite items to wishlist</li>
             <li>• Faster checkout with saved addresses</li>
@@ -64,14 +65,14 @@ export default async function SignUpPage({
           <div className="space-x-1">
             <Link
               href="/help"
-              className="text-gray-500 hover:text-gray-700 underline"
+              className="text-gray-500 underline hover:text-gray-700"
             >
               Need help?
             </Link>
             <span className="text-gray-300">•</span>
             <Link
               href="/contact"
-              className="text-gray-500 hover:text-gray-700 underline"
+              className="text-gray-500 underline hover:text-gray-700"
             >
               Contact us
             </Link>

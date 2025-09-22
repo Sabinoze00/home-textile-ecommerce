@@ -15,7 +15,12 @@
       "Bash(pg_ctl:*)",
       "Bash(psql:*)",
       "Bash(where postgres)",
-      "Bash(docker:*)"
+      "Bash(docker:*)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(npx prisma migrate diff:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npx shadcn-ui@latest add:*)",
+      "Bash(npx shadcn@latest add:*)"
     ],
     "deny": [],
     "ask": []

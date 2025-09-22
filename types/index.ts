@@ -154,8 +154,7 @@ export interface Address {
   firstName: string
   lastName: string
   company?: string
-  street1: string
-  street2?: string
+  street: string
   city: string
   state: string
   postalCode: string

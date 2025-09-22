@@ -20,7 +20,13 @@ const navigationItems = [
   { name: 'SALE', href: '/sale', highlight: true },
 ]
 
-export function Navigation({ mode = 'desktop', className }: { mode?: 'mobile' | 'desktop'; className?: string }) {
+export function Navigation({
+  mode = 'desktop',
+  className,
+}: {
+  mode?: 'mobile' | 'desktop'
+  className?: string
+}) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const toggleMobileMenu = () => {
@@ -34,13 +40,13 @@ export function Navigation({ mode = 'desktop', className }: { mode?: 'mobile' | 
       {/* Desktop Navigation - shown when not in mobile mode */}
       {!isMobile && (
         <nav className="flex items-center justify-center space-x-8 py-3">
-          {navigationItems.map((item) => (
+          {navigationItems.map(item => (
             <Link
               key={item.name}
               href={item.href}
               className={`text-sm font-medium transition-colors duration-200 hover:text-textile-terracotta ${
                 item.highlight
-                  ? 'text-red-600 font-semibold'
+                  ? 'font-semibold text-red-600'
                   : 'text-gray-700 hover:text-textile-navy'
               }`}
             >
@@ -69,15 +75,15 @@ export function Navigation({ mode = 'desktop', className }: { mode?: 'mobile' | 
 
       {/* Mobile Navigation Menu */}
       {isMobileMenuOpen && isMobile && (
-        <div className="absolute top-full left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+        <div className="absolute left-0 right-0 top-full z-50 border-t border-gray-200 bg-white shadow-lg">
           <nav className="flex flex-col py-4">
-            {navigationItems.map((item) => (
+            {navigationItems.map(item => (
               <Link
                 key={item.name}
                 href={item.href}
                 className={`px-6 py-3 text-sm font-medium transition-colors duration-200 hover:bg-gray-50 ${
                   item.highlight
-                    ? 'text-red-600 font-semibold'
+                    ? 'font-semibold text-red-600'
                     : 'text-gray-700 hover:text-textile-navy'
                 }`}
                 onClick={() => setIsMobileMenuOpen(false)}
