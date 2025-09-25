@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Collapsible } from '@/components/ui/collapsible'
 import {
   Facebook,
   Instagram,
@@ -119,9 +120,73 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Main Footer Links */}
-      <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+      {/* Main Footer Links - Mobile Collapsible, Desktop Regular */}
+      <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        {/* Mobile view with collapsible sections */}
+        <div className="block space-y-0 md:hidden">
+          <Collapsible title="Help">
+            <ul className="space-y-2">
+              {helpLinks.map(link => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-gray-600 transition-colors hover:text-textile-navy"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Collapsible>
+
+          <Collapsible title="Resources">
+            <ul className="space-y-2">
+              {resourceLinks.map(link => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-gray-600 transition-colors hover:text-textile-navy"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Collapsible>
+
+          <Collapsible title="About">
+            <ul className="space-y-2">
+              {aboutLinks.map(link => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-gray-600 transition-colors hover:text-textile-navy"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Collapsible>
+
+          <Collapsible title="In the Press">
+            <ul className="space-y-2">
+              {pressLinks.map(link => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-gray-600 transition-colors hover:text-textile-navy"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Collapsible>
+        </div>
+
+        {/* Desktop view with regular columns */}
+        <div className="hidden grid-cols-4 gap-8 md:grid">
           {/* Help */}
           <div>
             <h3 className="mb-4 font-semibold text-textile-navy">Help</h3>

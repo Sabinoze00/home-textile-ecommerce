@@ -10,6 +10,14 @@ export const metadata: Metadata = {
 }
 
 async function getBestSellingProducts() {
+  // Skip fetch during build time to avoid Jest worker issues
+  if (
+    process.env.NODE_ENV === 'production' &&
+    !process.env.NEXT_PUBLIC_APP_URL
+  ) {
+    return []
+  }
+
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
   try {
@@ -17,6 +25,7 @@ async function getBestSellingProducts() {
       `${baseUrl}/api/products?bestseller=true&limit=8`,
       {
         next: { revalidate: 3600 }, // Revalidate every hour
+        cache: 'force-cache',
       }
     )
 
@@ -39,13 +48,13 @@ export default async function HomePage() {
     <div className="min-h-screen">
       <HeroSection />
 
-      <div className="section-padding">
+      <div className="py-8">
         <CategoryGrid />
       </div>
 
       {/* Best Sellers Section */}
       {bestSellingProducts.length > 0 && (
-        <div className="section-padding bg-gray-50">
+        <div className="bg-gray-50 py-8">
           <ProductCarousel
             products={bestSellingProducts}
             title="Best Sellers"

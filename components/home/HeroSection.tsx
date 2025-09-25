@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 
 export function HeroSection() {
   return (
-    <section className="relative h-[60vh] overflow-hidden md:h-[70vh] lg:h-[80vh]">
+    <section className="relative h-[50vh] overflow-hidden md:h-[60vh] lg:h-[65vh]">
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
@@ -21,11 +21,11 @@ export function HeroSection() {
       {/* Content */}
       <div className="relative z-10 flex h-full items-center justify-center">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <h1 className="mb-4 text-4xl font-bold leading-tight text-white md:text-5xl lg:text-6xl">
+          <h1 className="mb-3 text-3xl font-bold leading-tight text-white md:text-4xl lg:text-5xl">
             How we do <span className="italic text-textile-cream">cozy</span>
           </h1>
 
-          <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-textile-cream md:text-xl">
+          <p className="mx-auto mb-6 max-w-2xl text-base leading-relaxed text-textile-cream md:text-lg">
             Transform your space with our curated collection of premium bedding,
             home textiles, and decor designed for ultimate comfort.
           </p>
@@ -33,7 +33,7 @@ export function HeroSection() {
           <Button
             size="lg"
             variant="textile"
-            className="h-auto px-8 py-4 text-base font-semibold tracking-wide transition-all duration-300 hover:bg-white hover:text-textile-navy"
+            className="h-auto px-6 py-3 text-sm font-semibold tracking-wide transition-all duration-300 hover:bg-white hover:text-textile-navy"
           >
             SHOP NEW ARRIVALS
           </Button>
@@ -41,9 +41,9 @@ export function HeroSection() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 transform md:block">
-        <div className="flex h-10 w-6 justify-center rounded-full border-2 border-white">
-          <div className="mt-2 h-3 w-1 animate-bounce rounded-full bg-white" />
+      <div className="absolute bottom-4 left-1/2 hidden -translate-x-1/2 transform md:block">
+        <div className="flex h-8 w-5 justify-center rounded-full border-2 border-white">
+          <div className="mt-1.5 h-2 w-0.5 animate-bounce rounded-full bg-white" />
         </div>
       </div>
     </section>

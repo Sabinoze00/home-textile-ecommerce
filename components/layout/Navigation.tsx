@@ -1,11 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
-import { Menu, X } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-const navigationItems = [
+export const navigationItems = [
   { name: 'NEW', href: '/new' },
   { name: 'BEDDING', href: '/bedding' },
   { name: 'SHEETS', href: '/sheets' },
@@ -23,16 +22,12 @@ const navigationItems = [
 export function Navigation({
   mode = 'desktop',
   className,
+  onMobileMenuToggle,
 }: {
   mode?: 'mobile' | 'desktop'
   className?: string
+  onMobileMenuToggle?: () => void
 }) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen)
-  }
-
   const isMobile = mode === 'mobile'
 
   return (
@@ -62,37 +57,11 @@ export function Navigation({
           variant="ghost"
           size="icon"
           className={className}
-          onClick={toggleMobileMenu}
+          onClick={onMobileMenuToggle}
           aria-label="Toggle mobile menu"
         >
-          {isMobileMenuOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Menu className="h-6 w-6" />
-          )}
+          <Menu className="h-6 w-6" />
         </Button>
-      )}
-
-      {/* Mobile Navigation Menu */}
-      {isMobileMenuOpen && isMobile && (
-        <div className="absolute left-0 right-0 top-full z-50 border-t border-gray-200 bg-white shadow-lg">
-          <nav className="flex flex-col py-4">
-            {navigationItems.map(item => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`px-6 py-3 text-sm font-medium transition-colors duration-200 hover:bg-gray-50 ${
-                  item.highlight
-                    ? 'font-semibold text-red-600'
-                    : 'text-gray-700 hover:text-textile-navy'
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </nav>
-        </div>
       )}
     </>
   )

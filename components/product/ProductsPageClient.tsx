@@ -1,7 +1,10 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ProductFilters } from '@/components/product/ProductFilters'
+import { FilterPanel } from '@/components/product/FilterPanel'
+import { ProductSort } from '@/components/product/ProductSort'
 import { ProductGrid } from '@/components/product/ProductGrid'
 import {
   ProductFilters as ProductFiltersType,
@@ -21,49 +24,67 @@ export function ProductsPageClient({
 }: ProductsPageClientProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false)
+
+  // Helper function to handle URL params that can be string or array
+  const parseArrayParam = (
+    param: string | string[] | undefined
+  ): string[] | undefined => {
+    if (!param) return undefined
+    if (Array.isArray(param)) return param
+    return typeof param === 'string' ? param.split(',') : undefined
+  }
+
+  const parseStringParam = (
+    param: string | string[] | undefined
+  ): string | undefined => {
+    if (!param) return undefined
+    return Array.isArray(param) ? param[0] : param
+  }
 
   // Parse current URL search params into filters
   const currentFilters: ProductFiltersType = {
     categories: initialSearchParams.category
-      ? [initialSearchParams.category]
+      ? ([parseStringParam(initialSearchParams.category)].filter(
+          Boolean
+        ) as string[])
       : undefined,
     priceRange:
       initialSearchParams.minPrice || initialSearchParams.maxPrice
         ? {
             min: initialSearchParams.minPrice
-              ? parseInt(initialSearchParams.minPrice)
+              ? parseInt(parseStringParam(initialSearchParams.minPrice) || '0')
               : 0,
             max: initialSearchParams.maxPrice
-              ? parseInt(initialSearchParams.maxPrice)
+              ? parseInt(
+                  parseStringParam(initialSearchParams.maxPrice) || '500'
+                )
               : 500,
           }
         : undefined,
-    colors: initialSearchParams.colors
-      ? initialSearchParams.colors.split(',')
-      : undefined,
-    sizes: initialSearchParams.sizes
-      ? initialSearchParams.sizes.split(',')
-      : undefined,
-    materials: initialSearchParams.materials
-      ? initialSearchParams.materials.split(',')
-      : undefined,
+    colors: parseArrayParam(initialSearchParams.colors),
+    sizes: parseArrayParam(initialSearchParams.sizes),
+    materials: parseArrayParam(initialSearchParams.materials),
     ratings: initialSearchParams.rating
-      ? [parseInt(initialSearchParams.rating)]
+      ? [parseInt(parseStringParam(initialSearchParams.rating) || '0')]
       : undefined,
     inStock:
-      initialSearchParams.inStock === 'true'
+      parseStringParam(initialSearchParams.inStock) === 'true'
         ? true
-        : initialSearchParams.inStock === 'false'
+        : parseStringParam(initialSearchParams.inStock) === 'false'
           ? false
           : undefined,
     onSale:
-      initialSearchParams.onSale === 'true'
+      parseStringParam(initialSearchParams.onSale) === 'true'
         ? true
-        : initialSearchParams.onSale === 'false'
+        : parseStringParam(initialSearchParams.onSale) === 'false'
           ? false
           : undefined,
-    sortBy: initialSearchParams.sortBy || 'name',
-    sortOrder: initialSearchParams.sortOrder || 'asc',
+    sortBy: parseStringParam(initialSearchParams.sortBy) || 'name',
+    sortOrder:
+      (parseStringParam(initialSearchParams.sortOrder) as 'asc' | 'desc') ||
+      'asc',
   }
 
   // Mock available filters - in a real app, these would come from an API
@@ -124,6 +145,14 @@ export function ProductsPageClient({
     priceRange: { min: 0, max: 500 },
   }
 
+  const toggleFilterPanel = () => {
+    setIsFilterPanelOpen(!isFilterPanelOpen)
+  }
+
+  const closeFilterPanel = () => {
+    setIsFilterPanelOpen(false)
+  }
+
   const handleFiltersChange = (newFilters: ProductFiltersType) => {
     // Build new URL with updated filters
     const urlParams = new URLSearchParams()
@@ -175,12 +204,39 @@ export function ProductsPageClient({
       urlParams.set('onSale', newFilters.onSale.toString())
     }
 
-    if (newFilters.sortBy && newFilters.sortBy !== 'name') {
-      urlParams.set('sortBy', newFilters.sortBy)
+    // Navigate to updated URL
+    const newUrl = `/products${urlParams.toString() ? `?${urlParams.toString()}` : ''}`
+    router.push(newUrl)
+  }
+
+  // Handle scroll detection for compact sticky state
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolled = window.scrollY > 100
+      setIsScrolled(scrolled)
     }
 
-    if (newFilters.sortOrder && newFilters.sortOrder !== 'asc') {
-      urlParams.set('sortOrder', newFilters.sortOrder)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const handleSortChange = (sort: {
+    sortBy?: ProductFiltersType['sortBy']
+    sortOrder?: ProductFiltersType['sortOrder']
+  }) => {
+    // Build new URL with updated sort parameters
+    const urlParams = new URLSearchParams(searchParams.toString())
+
+    if (sort.sortBy && sort.sortBy !== 'name') {
+      urlParams.set('sortBy', sort.sortBy)
+    } else {
+      urlParams.delete('sortBy')
+    }
+
+    if (sort.sortOrder && sort.sortOrder !== 'asc') {
+      urlParams.set('sortOrder', sort.sortOrder)
+    } else {
+      urlParams.delete('sortOrder')
     }
 
     // Navigate to updated URL
@@ -189,70 +245,87 @@ export function ProductsPageClient({
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="mb-4 text-3xl font-bold text-textile-navy md:text-4xl">
+    <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
+      {/* Filter Panel - rendered outside sticky container */}
+      <FilterPanel
+        isOpen={isFilterPanelOpen}
+        onClose={closeFilterPanel}
+        onFiltersChange={handleFiltersChange}
+        availableFilters={availableFilters}
+        initialFilters={currentFilters}
+      />
+
+      <div className="mb-4">
+        <h1 className="text-[28px] font-bold text-textile-navy">
           All Products
         </h1>
-        <p className="text-lg text-gray-600">
+      </div>
+
+      {/* Subtitle moved below title */}
+      <div className="mb-3">
+        <p className="text-xs text-gray-600">
           Discover our complete collection of premium home textiles
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
-        {/* Filters Sidebar */}
-        <div className="lg:col-span-1">
+      {/* Sticky Filters and Sort Row - Full width */}
+      <div
+        className={`sticky left-0 right-0 top-0 z-30 mb-4 border-b border-gray-200 bg-white/95 shadow-sm backdrop-blur-sm transition-all duration-300 ${isScrolled ? 'py-1' : 'py-2'} ml-[calc(-50vw+50%)] w-screen`}
+      >
+        <div className="flex w-full items-center justify-center gap-4 px-4">
           <ProductFilters
-            onFiltersChange={handleFiltersChange}
-            availableFilters={availableFilters}
+            onFilterToggle={toggleFilterPanel}
             initialFilters={currentFilters}
+            className="min-w-[120px]"
+          />
+          <div className="hidden h-6 w-px bg-gray-300 md:block" />
+          <ProductSort
+            onSortChange={handleSortChange}
+            className="min-w-[120px]"
           />
         </div>
-
-        {/* Products Content */}
-        <div className="lg:col-span-3">
-          {/* Results count */}
-          <div className="mb-6">
-            <p className="text-sm text-gray-600">
-              Showing {initialData.data.length} of{' '}
-              {initialData.pagination.total} products
-            </p>
-          </div>
-
-          {/* Products Grid */}
-          <ProductGrid products={initialData.data} />
-
-          {/* Pagination */}
-          {initialData.pagination.totalPages > 1 && (
-            <div className="mt-12 flex justify-center">
-              <div className="flex items-center gap-2">
-                {initialData.pagination.hasPrev && (
-                  <a
-                    href={`/products?${new URLSearchParams({ ...initialSearchParams, page: String(initialData.pagination.page - 1) }).toString()}`}
-                    className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                  >
-                    Previous
-                  </a>
-                )}
-
-                <span className="px-4 py-2 text-sm font-medium text-gray-700">
-                  Page {initialData.pagination.page} of{' '}
-                  {initialData.pagination.totalPages}
-                </span>
-
-                {initialData.pagination.hasNext && (
-                  <a
-                    href={`/products?${new URLSearchParams({ ...initialSearchParams, page: String(initialData.pagination.page + 1) }).toString()}`}
-                    className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                  >
-                    Next
-                  </a>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
       </div>
+
+      {/* Product Count - Below filters */}
+      <div className="mb-3">
+        <p className="text-sm text-gray-600">
+          Showing {initialData.data.length} of {initialData.pagination.total}{' '}
+          products
+        </p>
+      </div>
+
+      {/* Products Grid */}
+      <ProductGrid products={initialData.data} />
+
+      {/* Pagination */}
+      {initialData.pagination.totalPages > 1 && (
+        <div className="mt-12 flex justify-center">
+          <div className="flex items-center gap-2">
+            {initialData.pagination.hasPrev && (
+              <a
+                href={`/products?${new URLSearchParams({ ...initialSearchParams, page: String(initialData.pagination.page - 1) }).toString()}`}
+                className="rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Previous
+              </a>
+            )}
+
+            <span className="px-4 py-2 text-sm font-medium text-gray-700">
+              Page {initialData.pagination.page} of{' '}
+              {initialData.pagination.totalPages}
+            </span>
+
+            {initialData.pagination.hasNext && (
+              <a
+                href={`/products?${new URLSearchParams({ ...initialSearchParams, page: String(initialData.pagination.page + 1) }).toString()}`}
+                className="rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Next
+              </a>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

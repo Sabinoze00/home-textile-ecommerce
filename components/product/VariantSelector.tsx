@@ -93,16 +93,10 @@ export function VariantSelector({
     <div className={cn('space-y-6', className)}>
       {Object.entries(variantsByType).map(([type, typeVariants]) => (
         <div key={type} className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h4 className="font-medium text-gray-900">
+          <div>
+            <h4 className="font-bold text-gray-900">
               {getVariantTypeDisplayName(type)}
             </h4>
-            {localSelectedVariants[type] && (
-              <span className="text-sm text-gray-600">
-                {typeVariants.find(v => v.value === localSelectedVariants[type])
-                  ?.name || localSelectedVariants[type]}
-              </span>
-            )}
           </div>
 
           {/* Color variants use ColorPicker */}
@@ -116,12 +110,10 @@ export function VariantSelector({
             />
           ) : (
             /* Other variants use button grid */
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+            <div className="flex flex-wrap gap-2">
               {typeVariants.map(variant => {
                 const isSelected = localSelectedVariants[type] === variant.value
                 const isAvailable = isVariantAvailable(variant)
-                const variantPrice = getVariantPrice(variant)
-                const showPrice = showPricing && variantPrice !== basePrice
 
                 return (
                   <button
@@ -131,59 +123,20 @@ export function VariantSelector({
                     }
                     disabled={!isAvailable}
                     className={cn(
-                      'relative flex flex-col items-center justify-center rounded-lg border-2 p-4 text-left transition-all duration-200',
+                      'relative rounded-md border px-3 py-2 text-center text-sm font-medium transition-all duration-200',
                       isSelected
-                        ? 'border-textile-navy bg-textile-navy/5 shadow-sm'
+                        ? 'border-textile-navy bg-textile-navy text-white'
                         : isAvailable
-                          ? 'border-gray-300 hover:border-gray-400 hover:shadow-sm'
-                          : 'cursor-not-allowed border-gray-200 bg-gray-50 opacity-60',
-                      'min-h-[4rem]'
+                          ? 'border-gray-300 bg-white text-gray-900 hover:border-gray-400 hover:bg-gray-50'
+                          : 'cursor-not-allowed border-gray-200 bg-gray-50 text-gray-500 opacity-60'
                     )}
                     title={variant.name || variant.value}
                   >
-                    {/* Selected indicator */}
-                    {isSelected && (
-                      <div className="absolute right-2 top-2">
-                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-textile-navy">
-                          <Check className="h-3 w-3 text-white" />
-                        </div>
-                      </div>
-                    )}
+                    {variant.name || variant.value}
 
-                    {/* Variant name */}
-                    <span
-                      className={cn(
-                        'text-center text-sm font-medium',
-                        isSelected ? 'text-textile-navy' : 'text-gray-900'
-                      )}
-                    >
-                      {variant.name || variant.value}
-                    </span>
-
-                    {/* Price difference */}
-                    {showPrice && (
-                      <span className="mt-1 text-xs text-gray-600">
-                        {variantPrice > basePrice ? '+' : ''}$
-                        {(variantPrice - basePrice).toFixed(2)}
-                      </span>
-                    )}
-
-                    {/* Out of stock indicator */}
                     {!isAvailable && (
-                      <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-white/80">
-                        <div className="flex items-center gap-1 text-red-600">
-                          <AlertCircle className="h-4 w-4" />
-                          <span className="text-xs font-medium">
-                            Out of Stock
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* SKU if available */}
-                    {variant.sku && (
-                      <span className="mt-1 text-xs text-gray-500">
-                        SKU: {variant.sku}
+                      <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-red-600">
+                        Out of Stock
                       </span>
                     )}
                   </button>

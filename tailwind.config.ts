@@ -87,11 +87,11 @@ const config: Config = {
         'fade-in': 'fade-in 0.5s ease-out',
       },
       screens: {
-        'xs': '475px',
-        'sm': '640px',
-        'md': '768px',
-        'lg': '1024px',
-        'xl': '1280px',
+        xs: '475px',
+        sm: '640px',
+        md: '768px',
+        lg: '1024px',
+        xl: '1280px',
         '2xl': '1536px',
       },
       spacing: {
@@ -99,7 +99,8 @@ const config: Config = {
         '88': '22rem',
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['var(--font-lato)', 'sans-serif'],
+        display: ['var(--font-playfair-display)', 'serif'],
       },
     },
   },
@@ -112,7 +113,7 @@ const config: Config = {
           '&::-webkit-scrollbar': { display: 'none' },
         },
       })
-    })
+    }),
   ],
 } satisfies Config
 

@@ -140,6 +140,7 @@ export interface User {
   phone?: string
   dateOfBirth?: Date
   avatar?: string
+  role?: UserRole
   addresses?: Address[]
   orders?: Order[]
   wishlist?: Product[]
@@ -208,6 +209,10 @@ export interface Order {
   total: number
   couponCode?: string
   paymentMethod: PaymentMethod
+  paymentProvider?: PaymentProvider
+  paymentIntentId?: string
+  paypalOrderId?: string
+  paymentMetadata?: Record<string, any>
   tracking?: TrackingInfo
   notes?: string
   createdAt: Date
@@ -224,20 +229,15 @@ export interface OrderItem {
 }
 
 export type OrderStatus =
-  | 'pending'
-  | 'confirmed'
-  | 'processing'
-  | 'shipped'
-  | 'delivered'
-  | 'cancelled'
-  | 'refunded'
+  | 'PENDING'
+  | 'CONFIRMED'
+  | 'PROCESSING'
+  | 'SHIPPED'
+  | 'DELIVERED'
+  | 'CANCELLED'
+  | 'REFUNDED'
 
-export type PaymentStatus =
-  | 'pending'
-  | 'processing'
-  | 'completed'
-  | 'failed'
-  | 'refunded'
+export type PaymentStatus = 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED'
 
 export interface PaymentMethod {
   id: string
@@ -246,6 +246,45 @@ export interface PaymentMethod {
   brand?: string
   expiryMonth?: number
   expiryYear?: number
+}
+
+export type PaymentProviderKey = 'stripe' | 'paypal'
+
+export type PaymentProvider = 'STRIPE' | 'PAYPAL'
+
+export interface StripePaymentIntent {
+  id: string
+  amount: number
+  currency: string
+  status: string
+  client_secret: string
+}
+
+export interface PayPalOrder {
+  id: string
+  status: string
+  purchase_units: {
+    amount: {
+      currency_code: string
+      value: string
+    }
+  }[]
+  links: {
+    href: string
+    rel: string
+    method: string
+  }[]
+}
+
+export interface PaymentMethodSelection {
+  provider: PaymentProviderKey
+  type: 'card' | 'paypal'
+}
+
+export interface CheckoutSession {
+  id: string
+  url: string
+  payment_status: string
 }
 
 export interface TrackingInfo {
@@ -296,4 +335,92 @@ export interface ProductFilters {
   onSale?: boolean
   sortBy?: 'name' | 'price' | 'rating' | 'newest' | 'bestseller'
   sortOrder?: 'asc' | 'desc'
+}
+
+export type UserRole = 'USER' | 'ADMIN'
+
+export interface AdminUser extends User {
+  role: UserRole
+}
+
+export interface AdminMetrics {
+  totalSales: number
+  totalOrders: number
+  totalProducts: number
+  totalCustomers: number
+  revenueGrowth: number
+  orderGrowth: number
+  topSellingProducts: {
+    id: string
+    name: string
+    sales: number
+    revenue: number
+  }[]
+  revenueByMonth: {
+    month: string
+    revenue: number
+    orders: number
+  }[]
+}
+
+export interface AdminProductTableRow {
+  id: string
+  name: string
+  sku: string
+  price: number
+  stockQuantity: number
+  category: string
+  status: 'active' | 'inactive'
+  image?: string | null
+  reviewCount?: number
+  sales: number
+  revenue: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface AdminOrderTableRow {
+  id: string
+  orderNumber: string
+  customerName: string
+  customerEmail: string
+  status:
+    | 'PENDING'
+    | 'CONFIRMED'
+    | 'PROCESSING'
+    | 'SHIPPED'
+    | 'DELIVERED'
+    | 'CANCELLED'
+    | 'REFUNDED'
+  paymentStatus: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED'
+  paymentProvider?: 'STRIPE' | 'PAYPAL' | null
+  itemCount: number
+  trackingNumber?: string | null
+  notes?: string | null
+  total: number
+  createdAt: string
+}
+
+export interface AdminOrderWithItems extends AdminOrderTableRow {
+  updatedAt: string
+  items: {
+    id: string
+    productName: string
+    quantity: number
+    price: number
+    total: number
+    productImage?: string | null
+  }[]
+}
+
+export interface AdminFilters {
+  search?: string
+  status?: string
+  orderStatus?: string
+  paymentStatus?: string
+  dateRange?: {
+    from: Date
+    to: Date
+  }
+  category?: string
 }

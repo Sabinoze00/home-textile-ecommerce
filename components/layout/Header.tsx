@@ -1,7 +1,9 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ShoppingBag, User, Heart, LogOut } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import { ShoppingBag, User, Heart, LogOut, Shield } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,34 +15,71 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Navigation } from './Navigation'
 import { SearchBar } from './SearchBar'
+import { CategoryNavigation } from './CategoryNavigation'
+import { MobileMenu } from './MobileMenu'
 import { CartDrawer } from '@/components/cart/CartDrawer'
 import { useCart } from '@/hooks/use-cart'
 
 export function Header() {
   const { data: session } = useSession()
   const { itemCount } = useCart()
+  const [scrolled, setScrolled] = useState(false)
+  const [showCategories, setShowCategories] = useState(true)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
+  const isHomepage = pathname === '/'
 
   const handleSignOut = () => {
     signOut({ callbackUrl: '/' })
   }
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false)
+  }
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY
+      const shouldHideCategories = scrollPosition > 50
+
+      setScrolled(scrollPosition > 0)
+      setShowCategories(!shouldHideCategories)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   return (
     <header className="relative">
+      {/* Mobile Menu - rendered outside sticky container */}
+      <MobileMenu isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
+
       {/* Promotional Banner */}
-      <div className="bg-textile-navy px-4 py-2 text-center text-white">
+      <div className="bg-textile-navy px-4 py-1 text-center text-white">
         <p className="text-sm">
           Free shipping on orders over $75 | 30-day returns
         </p>
       </div>
 
       {/* Main Header */}
-      <div className="relative sticky top-0 z-40 border-b border-gray-200 bg-white">
+      <div
+        className={`relative border-b border-gray-200 bg-white ${isHomepage || scrolled ? 'sticky top-0 z-40' : ''}`}
+      >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Main row with centered logo and side icons */}
-          <div className="flex h-16 items-center justify-between">
+          <div className="flex h-12 items-center justify-between">
             {/* Left side icons on desktop, mobile menu on mobile */}
             <div className="flex items-center space-x-4">
-              <Navigation mode="mobile" className="lg:hidden" />
+              <Navigation
+                mode="mobile"
+                className="lg:hidden"
+                onMobileMenuToggle={toggleMobileMenu}
+              />
               <div className="hidden items-center space-x-4 lg:flex">
                 {/* Account */}
                 {session ? (
@@ -61,6 +100,17 @@ export function Header() {
                       <DropdownMenuItem asChild>
                         <Link href="/account/addresses">Addresses</Link>
                       </DropdownMenuItem>
+                      {session?.user?.role === 'ADMIN' && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem asChild>
+                            <Link href="/admin">
+                              <Shield className="mr-2 h-4 w-4" />
+                              Admin Dashboard
+                            </Link>
+                          </DropdownMenuItem>
+                        </>
+                      )}
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={handleSignOut}>
                         <LogOut className="mr-2 h-4 w-4" />
@@ -98,7 +148,7 @@ export function Header() {
             <div className="flex items-center space-x-4">
               {/* Desktop Search Bar */}
               <div className="hidden md:flex">
-                <SearchBar className="w-64" />
+                <SearchBar className="w-80" />
               </div>
 
               {/* Shopping Cart with CartDrawer */}
@@ -121,6 +171,14 @@ export function Header() {
             <SearchBar className="w-full" />
           </div>
         </div>
+
+        {/* Category Navigation - Only on homepage */}
+        {isHomepage && (
+          <CategoryNavigation
+            isVisible={showCategories}
+            className={`transition-all duration-300 ${scrolled ? 'border-t-0' : 'border-t border-gray-100'}`}
+          />
+        )}
 
         {/* Desktop Navigation Row */}
         <div className="hidden border-t border-gray-100 lg:block">

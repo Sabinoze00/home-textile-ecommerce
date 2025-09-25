@@ -18,6 +18,7 @@ interface ProductGridProps {
     lg?: number
     xl?: number
   }
+  collectionSlug?: string
 }
 
 const SkeletonCard = () => (
@@ -43,10 +44,11 @@ export function ProductGrid({
   className,
   onColorSelect,
   emptyMessage = 'No products found',
-  gridCols = { default: 1, sm: 2, lg: 4 },
+  gridCols = { default: 2, sm: 2, lg: 3, xl: 4 },
+  collectionSlug,
 }: ProductGridProps) {
   const getGridClasses = () => {
-    const classes = ['grid', 'gap-6']
+    const classes = ['grid', 'gap-3']
 
     // Default grid columns
     classes.push(`grid-cols-${gridCols.default}`)
@@ -108,6 +110,7 @@ export function ProductGrid({
           key={product.id}
           product={product}
           onColorSelect={onColorSelect}
+          collectionSlug={collectionSlug}
         />
       ))}
     </div>

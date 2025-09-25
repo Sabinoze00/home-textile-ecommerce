@@ -1,0 +1,126 @@
+'use client'
+
+import Link from 'next/link'
+import { useState } from 'react'
+import { useSession } from 'next-auth/react'
+import { Menu, X, Settings } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+
+const navigationItems = [
+  { name: 'NEW', href: '/new' },
+  { name: 'BEDDING', href: '/bedding' },
+  { name: 'SHEETS', href: '/sheets' },
+  { name: 'COMFORTERS', href: '/comforters' },
+  { name: 'PILLOWS', href: '/pillows' },
+  { name: 'BATH', href: '/bath' },
+  { name: 'MATTRESS', href: '/mattress' },
+  { name: 'LOUNGEWEAR', href: '/loungewear' },
+  { name: 'KIDS & BABY', href: '/kids-baby' },
+  { name: 'HOME DECOR', href: '/home-decor' },
+  { name: 'OUTDOOR', href: '/outdoor' },
+  { name: 'SALE', href: '/sale', highlight: true },
+]
+
+export function Navigation({
+  mode = 'desktop',
+  className,
+}: {
+  mode?: 'mobile' | 'desktop'
+  className?: string
+}) {
+  const { data: session } = useSession()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+
+  const isMobile = mode === 'mobile'
+
+  return (
+    <>
+      {/* Desktop Navigation - shown when not in mobile mode */}
+      {!isMobile && (
+        <nav className="flex items-center justify-center space-x-8 py-3">
+          {navigationItems.map(item => (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={`text-sm font-medium transition-colors duration-200 hover:text-textile-terracotta ${
+                item.highlight
+                  ? 'font-semibold text-red-600'
+                  : 'text-gray-700 hover:text-textile-navy'
+              }`}
+            >
+              {item.name}
+            </Link>
+          ))}
+          {/* Admin Link */}
+          {session?.user?.role === 'ADMIN' && (
+            <Link
+              href="/admin"
+              className="flex items-center text-sm font-medium text-blue-600 transition-colors duration-200 hover:text-blue-700"
+              title="Admin Dashboard"
+            >
+              <Settings className="mr-1 h-4 w-4" />
+              <span className="hidden sm:inline">ADMIN</span>
+            </Link>
+          )}
+        </nav>
+      )}
+
+      {/* Mobile Menu Button - shown when in mobile mode */}
+      {isMobile && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className={className}
+          onClick={toggleMobileMenu}
+          aria-label="Toggle mobile menu"
+        >
+          {isMobileMenuOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Menu className="h-6 w-6" />
+          )}
+        </Button>
+      )}
+
+      {/* Mobile Navigation Menu */}
+      {isMobileMenuOpen && isMobile && (
+        <div className="absolute left-0 right-0 top-full z-50 border-t border-gray-200 bg-white shadow-lg">
+          <nav className="flex flex-col py-4">
+            {navigationItems.map(item => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`px-6 py-3 text-sm font-medium transition-colors duration-200 hover:bg-gray-50 ${
+                  item.highlight
+                    ? 'font-semibold text-red-600'
+                    : 'text-gray-700 hover:text-textile-navy'
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {item.name}
+              </Link>
+            ))}
+            {/* Admin Link for Mobile */}
+            {session?.user?.role === 'ADMIN' && (
+              <Link
+                href="/admin"
+                className="flex items-center border-t border-gray-200 px-6 py-3 text-sm font-medium text-blue-600 transition-colors duration-200 hover:bg-blue-50 hover:text-blue-700"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Admin Dashboard</span>
+                <span className="ml-auto rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-700">
+                  ADMIN
+                </span>
+              </Link>
+            )}
+          </nav>
+        </div>
+      )}
+    </>
+  )
+}

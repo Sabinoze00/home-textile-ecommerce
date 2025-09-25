@@ -63,11 +63,18 @@
 
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display font-semibold;
   }
 
   h1 {
@@ -93,11 +100,11 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-textile-navy text-white hover:bg-textile-navy/90 px-6 py-3 rounded-md font-medium transition-colors duration-200;
+    @apply rounded-md bg-textile-navy px-6 py-3 font-medium text-white transition-colors duration-200 hover:bg-textile-navy/90;
   }
 
   .btn-secondary {
-    @apply bg-textile-sage text-white hover:bg-textile-sage/90 px-6 py-3 rounded-md font-medium transition-colors duration-200;
+    @apply rounded-md bg-textile-sage px-6 py-3 font-medium text-white transition-colors duration-200 hover:bg-textile-sage/90;
   }
 
   .text-gradient {
@@ -105,7 +112,7 @@
   }
 
   .card-hover {
-    @apply transition-all duration-300 hover:shadow-lg hover:scale-[1.02];
+    @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-lg;
   }
 
   .section-padding {
@@ -114,5 +121,46 @@
 
   .page-padding {
     @apply px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Category buttons styling */
+  .t5 {
+    @apply inline-block whitespace-nowrap rounded-full px-3 py-1 text-sm font-medium transition-all duration-200;
+    @apply border border-gray-300 bg-white text-gray-700;
+    @apply hover:border-gray-400 hover:bg-gray-50;
+    @apply focus:outline-none focus:ring-2 focus:ring-textile-navy focus:ring-offset-2;
+    @apply active:bg-gray-100;
+  }
+
+  .t5[data-color='night-sky-dark'] {
+    @apply text-gray-800;
+  }
+
+  .t5[data-bg-color='daybreak'] {
+    @apply border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50;
+  }
+
+  .t5:hover[data-bg-color='daybreak'] {
+    @apply border-orange-300 from-orange-100 to-yellow-100;
+  }
+}
+
+/* Mobile menu slide-in animation */
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Overlay fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

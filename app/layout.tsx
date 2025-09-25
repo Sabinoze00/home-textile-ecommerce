@@ -1,11 +1,21 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Lato, Playfair_Display } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Providers } from '@/components/providers/Providers'
 
-const inter = Inter({ subsets: ['latin'] })
+const lato = Lato({
+  subsets: ['latin'],
+  weight: ['300', '400', '700'],
+  variable: '--font-lato',
+})
+
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-playfair-display',
+})
 
 export const metadata: Metadata = {
   title: 'Home Textile Store - Quality Bedding & Home Decor',
@@ -60,7 +70,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.className} antialiased`}>
+      <body
+        className={`${lato.variable} ${playfairDisplay.variable} font-sans antialiased`}
+      >
         <Providers>
           <div className="flex min-h-screen flex-col">
             <Header />

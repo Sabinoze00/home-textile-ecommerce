@@ -43,6 +43,7 @@ A modern, responsive e-commerce website built with Next.js 14, TypeScript, and T
 ## 🎨 Design System
 
 ### Colors
+
 - **Primary**: Navy blue for headers and primary actions
 - **Secondary**: Sage green for secondary elements
 - **Accent**: Terracotta for highlights and calls-to-action
@@ -50,6 +51,7 @@ A modern, responsive e-commerce website built with Next.js 14, TypeScript, and T
 - **Typography**: Inter font family for modern readability
 
 ### Components
+
 - Responsive navigation with mobile hamburger menu
 - Hero section with full-width imagery and overlay text
 - Category grid with hover effects and badge system
@@ -59,18 +61,21 @@ A modern, responsive e-commerce website built with Next.js 14, TypeScript, and T
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js 18.17.0 or higher
 - npm, yarn, or pnpm package manager
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd home-textile-ecommerce
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    # or
@@ -80,6 +85,7 @@ A modern, responsive e-commerce website built with Next.js 14, TypeScript, and T
    ```
 
 3. **Run the development server**
+
    ```bash
    npm run dev
    # or
@@ -105,6 +111,7 @@ A modern, responsive e-commerce website built with Next.js 14, TypeScript, and T
 ## 🎯 Development Guidelines
 
 ### Code Style
+
 - Use TypeScript for all components and utilities
 - Follow ESLint and Prettier configurations
 - Use Tailwind CSS classes for styling
@@ -112,6 +119,7 @@ A modern, responsive e-commerce website built with Next.js 14, TypeScript, and T
 - Use Shadcn/ui components when possible
 
 ### Component Development
+
 - Create reusable components in appropriate directories
 - Use proper TypeScript interfaces for props
 - Follow naming conventions (PascalCase for components)
@@ -119,6 +127,7 @@ A modern, responsive e-commerce website built with Next.js 14, TypeScript, and T
 - Optimize images using Next.js Image component
 
 ### Performance Best Practices
+
 - Use Next.js Image component for optimized images
 - Implement proper lazy loading
 - Minimize bundle size with tree shaking
@@ -135,6 +144,7 @@ The application is ready for deployment on platforms like:
 - **Docker containers**
 
 ### Build for Production
+
 ```bash
 npm run build
 npm run start
@@ -150,17 +160,20 @@ npm run start
 ## 🔧 Customization
 
 ### Adding New Components
+
 1. Create component in appropriate directory
 2. Export from component's index file
 3. Add TypeScript interfaces in `types/index.ts`
 4. Follow existing component patterns
 
 ### Extending the Design System
+
 1. Update `tailwind.config.ts` for new colors/spacing
 2. Add custom CSS classes in `globals.css`
 3. Update component variants as needed
 
 ### Adding New Pages
+
 1. Create new route in `app/` directory
 2. Follow Next.js 14 App Router conventions
 3. Add proper metadata for SEO

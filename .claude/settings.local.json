@@ -20,7 +20,17 @@
       "Bash(npx prisma migrate diff:*)",
       "Bash(npx prisma:*)",
       "Bash(npx shadcn-ui@latest add:*)",
-      "Bash(npx shadcn@latest add:*)"
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(node:*)",
+      "Bash(npx eslint:*)",
+      "Read(//c/Users/sabin/Downloads/ecommerce_clone/**)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(rm:*)",
+      "Bash(cat:*)",
+      "Bash(pkill:*)",
+      "Bash(curl:*)",
+      "Bash(npm test)"
     ],
     "deny": [],
     "ask": []

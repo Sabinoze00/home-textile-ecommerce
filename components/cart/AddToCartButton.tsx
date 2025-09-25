@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ShoppingCart, Check, Plus } from 'lucide-react'
 import { Product, ProductVariant } from '@/types'
 import { useCart } from '@/hooks/use-cart'
@@ -145,6 +145,7 @@ interface AddToCartWithQuantityProps
   defaultQuantity?: number
   maxQuantity?: number
   showQuantitySelector?: boolean
+  onQuantityChange?: (quantity: number) => void
 }
 
 export function AddToCartWithQuantity({
@@ -154,14 +155,34 @@ export function AddToCartWithQuantity({
   maxQuantity = 10,
   showQuantitySelector = true,
   onAddToCart,
+  onQuantityChange,
   className,
   ...props
 }: AddToCartWithQuantityProps) {
   const [quantity, setQuantity] = useState(defaultQuantity)
 
+  // Sync with external quantity changes
+  useEffect(() => {
+    setQuantity(defaultQuantity)
+  }, [defaultQuantity])
+
   const handleQuantityChange = (newQuantity: number) => {
+    console.log('AddToCartWithQuantity handleQuantityChange called:', {
+      newQuantity,
+      maxQuantity,
+      onQuantityChange: !!onQuantityChange,
+    })
     if (newQuantity >= 1 && newQuantity <= maxQuantity) {
+      console.log('Setting quantity to:', newQuantity)
       setQuantity(newQuantity)
+      console.log('Calling onQuantityChange with:', newQuantity)
+      onQuantityChange?.(newQuantity)
+    } else {
+      console.log('Quantity change rejected due to limits:', {
+        newQuantity,
+        min: 1,
+        max: maxQuantity,
+      })
     }
   }
 

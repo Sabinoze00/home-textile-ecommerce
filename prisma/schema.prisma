@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -16,15 +13,12 @@ model Category {
   slug        String    @unique
   description String?
   image       String
-  badge       String?   // 'sale' | 'bestseller' | 'new' | 'featured'
+  badge       String?
   isActive    Boolean   @default(true)
   sortOrder   Int       @default(0)
-
-  // Relations
-  products    Product[]
-
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  products    Product[]
 
   @@map("categories")
 }
@@ -33,7 +27,7 @@ model Product {
   id                 String                 @id @default(cuid())
   name               String
   slug               String                 @unique
-  description        String                 @db.Text
+  description        String
   shortDescription   String?
   price              Decimal                @db.Decimal(10, 2)
   originalPrice      Decimal?               @db.Decimal(10, 2)
@@ -48,21 +42,15 @@ model Product {
   isOnSale           Boolean                @default(false)
   isNew              Boolean                @default(false)
   isBestseller       Boolean                @default(false)
-
-  // Foreign keys
   categoryId         String
-
-  // Relations
-  category           Category               @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  images             ProductImage[]
-  variants           ProductVariant[]
-  specifications     ProductSpecification[]
-  reviews            ProductReview[]
-
   createdAt          DateTime               @default(now())
   updatedAt          DateTime               @updatedAt
+  images             ProductImage[]
+  reviews            ProductReview[]
+  specifications     ProductSpecification[]
+  variants           ProductVariant[]
+  category           Category               @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  // Indexes for search optimization
   @@index([name])
   @@index([description])
   @@index([categoryId])
@@ -76,102 +64,80 @@ model Product {
 }
 
 model ProductImage {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   url       String
   alt       String
-  isPrimary Boolean @default(false)
-  sortOrder Int     @default(0)
-
-  // Foreign keys
+  isPrimary Boolean  @default(false)
+  sortOrder Int      @default(0)
   productId String
-
-  // Relations
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@map("product_images")
 }
 
 model ProductVariant {
-  id      String  @id @default(cuid())
-  name    String
-  type    String  // 'color' | 'size' | 'material' | 'pattern'
-  value   String
-  price   Decimal? @db.Decimal(10, 2)
-  sku     String?
-  inStock Boolean @default(true)
-  image   String?
-
-  // Foreign keys
+  id        String   @id @default(cuid())
+  name      String
+  type      String
+  value     String
+  price     Decimal? @db.Decimal(10, 2)
+  sku       String?
+  inStock   Boolean  @default(true)
+  image     String?
   productId String
-
-  // Relations
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@map("product_variants")
 }
 
 model ProductSpecification {
-  id       String  @id @default(cuid())
-  name     String
-  value    String
-  category String?
-
-  // Foreign keys
+  id        String   @id @default(cuid())
+  name      String
+  value     String
+  category  String?
   productId String
-
-  // Relations
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@map("product_specifications")
 }
 
 model ProductReview {
-  id                 String  @id @default(cuid())
+  id                 String   @id @default(cuid())
   userName           String
   userEmail          String?
   rating             Int
   title              String
-  comment            String  @db.Text
-  isVerifiedPurchase Boolean @default(false)
-  helpful            Int     @default(0)
-
-  // Foreign keys
+  comment            String
+  isVerifiedPurchase Boolean  @default(false)
+  helpful            Int      @default(0)
   productId          String
-
-  // Relations
-  product            Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+  product            Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@map("product_reviews")
 }
 
-// NextAuth.js Models
 model Account {
   id                String  @id @default(cuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
@@ -196,16 +162,16 @@ model User {
   firstName     String?
   lastName      String?
   phone         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  role          Role      @default(USER)
+  accounts      Account[]
+  addresses     Address[]
+  carts         Cart[]
+  orders        Order[]
+  sessions      Session[]
 
-  accounts Account[]
-  sessions Session[]
-  orders   Order[]
-  addresses Address[]
-  carts    Cart[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  @@index([role])
   @@map("users")
 }
 
@@ -218,139 +184,129 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-// E-commerce Models
 model Address {
-  id         String  @id @default(cuid())
-  firstName  String
-  lastName   String
-  company    String?
-  street     String
-  city       String
-  state      String
-  postalCode String
-  country    String
-  phone      String?
-  isDefault  Boolean @default(false)
-  type       String  // 'shipping' | 'billing'
-
-  // Foreign keys
-  userId     String
-
-  // Relations
-  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  shippingOrders Order[] @relation("ShippingAddress")
-  billingOrders  Order[] @relation("BillingAddress")
-
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id             String   @id @default(cuid())
+  firstName      String
+  lastName       String
+  company        String?
+  street         String
+  city           String
+  state          String
+  postalCode     String
+  country        String
+  phone          String?
+  isDefault      Boolean  @default(false)
+  type           String
+  userId         String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  billingOrders  Order[]  @relation("BillingAddress")
+  shippingOrders Order[]  @relation("ShippingAddress")
 
   @@map("addresses")
 }
 
 model Order {
-  id              String      @id @default(cuid())
-  orderNumber     String      @unique
-  status          OrderStatus @default(PENDING)
-  subtotal        Decimal     @db.Decimal(10, 2)
-  tax             Decimal     @db.Decimal(10, 2)
-  shipping        Decimal     @db.Decimal(10, 2)
-  total           Decimal     @db.Decimal(10, 2)
-  currency        String      @default("USD")
-  notes           String?     @db.Text
-
-  // Payment information
-  paymentStatus   PaymentStatus @default(PENDING)
-  paymentMethod   String?
-
-  // Shipping information
-  shippingMethod  String?
-  trackingNumber  String?
+  id                String           @id @default(cuid())
+  orderNumber       String           @unique
+  status            OrderStatus      @default(PENDING)
+  subtotal          Decimal          @db.Decimal(10, 2)
+  tax               Decimal          @db.Decimal(10, 2)
+  shipping          Decimal          @db.Decimal(10, 2)
+  total             Decimal          @db.Decimal(10, 2)
+  currency          String           @default("USD")
+  notes             String?
+  paymentStatus     PaymentStatus    @default(PENDING)
+  paymentMethod     String?
+  shippingMethod    String?
+  trackingNumber    String?
   estimatedDelivery DateTime?
-
-  // Foreign keys
-  userId          String
+  userId            String?
   shippingAddressId String
   billingAddressId  String
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  paymentIntentId   String?
+  paymentMetadata   Json?
+  paymentProvider   PaymentProvider?
+  paypalOrderId     String?
+  items             OrderItem[]
+  billingAddress    Address          @relation("BillingAddress", fields: [billingAddressId], references: [id])
+  shippingAddress   Address          @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
+  user              User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Relations
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  shippingAddress Address   @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
-  billingAddress  Address   @relation("BillingAddress", fields: [billingAddressId], references: [id])
-  items           OrderItem[]
-
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  // Indexes
   @@index([userId])
   @@index([status])
   @@index([orderNumber])
+  @@index([paymentProvider])
+  @@index([paymentIntentId])
+  @@index([paypalOrderId])
   @@map("orders")
 }
 
 model OrderItem {
-  id            String  @id @default(cuid())
-  quantity      Int
-  price         Decimal @db.Decimal(10, 2)
-  total         Decimal @db.Decimal(10, 2)
-
-  // Product snapshot data
-  productName   String
-  productSlug   String
-  productImage  String
-  variantName   String?
-  variantValue  String?
-
-  // Foreign keys
-  orderId       String
-  productId     String
-  variantId     String?
-
-  // Relations
-  order         Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String   @id @default(cuid())
+  quantity     Int
+  price        Decimal  @db.Decimal(10, 2)
+  total        Decimal  @db.Decimal(10, 2)
+  productName  String
+  productSlug  String
+  productImage String
+  variantName  String?
+  variantValue String?
+  orderId      String
+  productId    String
+  variantId    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@map("order_items")
 }
 
 model Cart {
   id        String     @id @default(cuid())
-
-  // Foreign keys
   userId    String
-
-  // Relations
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items     CartItem[]
-
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  items     CartItem[]
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("carts")
 }
 
 model CartItem {
-  id        String @id @default(cuid())
+  id        String   @id @default(cuid())
   quantity  Int
-
-  // Foreign keys
   cartId    String
   productId String
   variantId String?
-
-  // Relations
-  cart      Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
 
   @@unique([cartId, productId, variantId])
   @@map("cart_items")
 }
 
-// Enums
+model WebhookEvent {
+  id          String          @id @default(cuid())
+  eventId     String          @unique
+  provider    PaymentProvider
+  eventType   String
+  processed   Boolean         @default(false)
+  processedAt DateTime?
+  metadata    Json?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([eventId])
+  @@index([provider])
+  @@index([processed])
+  @@map("webhook_events")
+}
+
 enum OrderStatus {
   PENDING
   CONFIRMED
@@ -366,4 +322,14 @@ enum PaymentStatus {
   PAID
   FAILED
   REFUNDED
+}
+
+enum PaymentProvider {
+  STRIPE
+  PAYPAL
+}
+
+enum Role {
+  USER
+  ADMIN
 }

@@ -135,7 +135,7 @@ export function SearchBar({
             value={searchTerm}
             onChange={handleInputChange}
             onFocus={handleInputFocus}
-            className="h-10 w-full border-gray-300 pl-10 pr-10 focus:border-textile-navy focus:ring-textile-navy"
+            className="h-10 w-full rounded-full border-gray-300 pl-10 pr-10 focus:border-textile-navy focus:ring-textile-navy"
           />
           {searchTerm && (
             <button
@@ -156,7 +156,7 @@ export function SearchBar({
 
       {/* Search Dropdown */}
       {isOpen && (searchResults || searchTerm) && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-96 overflow-y-auto rounded-md border border-gray-200 bg-white shadow-lg">
+        <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-96 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-lg">
           {searchResults && (
             <>
               {/* Quick Results */}

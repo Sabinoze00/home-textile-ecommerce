@@ -75,7 +75,7 @@ const categories: (Omit<Category, 'slug'> & { badge: CategoryBadge })[] = [
 export function CategoryGrid() {
   return (
     <section className="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-12 text-center">
+      <div className="mb-8 text-center">
         <h2 className="mb-4 text-3xl font-bold text-textile-navy md:text-4xl">
           Shop by Category
         </h2>
@@ -85,7 +85,7 @@ export function CategoryGrid() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {categories.map(category => (
           <Link
             key={category.id}
@@ -105,7 +105,7 @@ export function CategoryGrid() {
 
             {/* Badge */}
             {category.badge && (
-              <div className="absolute left-4 top-4 z-10">
+              <div className="absolute left-2 top-2 z-10">
                 <Badge variant={category.badge}>
                   {category.badge === 'sale' && 'SALE'}
                   {category.badge === 'bestseller' && 'BESTSELLER'}
@@ -116,8 +116,8 @@ export function CategoryGrid() {
             )}
 
             {/* Category Name */}
-            <div className="absolute inset-0 z-10 flex items-center justify-center p-4">
-              <h3 className="text-center text-lg font-bold leading-tight text-white md:text-xl">
+            <div className="absolute inset-0 z-10 flex items-center justify-center p-2">
+              <h3 className="text-center text-base font-bold leading-tight text-white md:text-lg">
                 {category.name}
               </h3>
             </div>
@@ -126,7 +126,7 @@ export function CategoryGrid() {
       </div>
 
       {/* Call to Action */}
-      <div className="mt-12 text-center">
+      <div className="mt-8 text-center">
         <p className="mb-4 text-gray-600">
           Can't find what you're looking for?
         </p>

@@ -7,9 +7,10 @@ interface ColorPickerProps {
   colors: ProductVariant[]
   selectedColor?: string
   onColorSelect?: (color: string) => void
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'xs' | 'sm' | 'md' | 'lg'
   mode?: 'thumbnail' | 'full'
   className?: string
+  interactiveFallback?: boolean
 }
 
 const colorMap: Record<string, string> = {
@@ -42,6 +43,7 @@ const colorMap: Record<string, string> = {
 }
 
 const sizeClasses = {
+  xs: 'w-4 h-4',
   sm: 'w-6 h-6',
   md: 'w-8 h-8',
   lg: 'w-10 h-10',
@@ -54,12 +56,46 @@ export function ColorPicker({
   size = 'md',
   mode = 'thumbnail',
   className,
+  interactiveFallback = false,
 }: ColorPickerProps) {
-  if (!colors || colors.length === 0) return null
+  const colorVariants =
+    colors?.filter(variant => variant.type === 'color') || []
+  const hasSyntheticVariant = colorVariants.length === 0
 
-  const colorVariants = colors.filter(variant => variant.type === 'color')
-
-  if (colorVariants.length === 0) return null
+  // If no color variants, create default ones
+  const displayVariants =
+    colorVariants.length > 0
+      ? colorVariants
+      : [
+          {
+            id: 'natural',
+            name: 'Natural',
+            type: 'color' as const,
+            value: 'natural',
+            inStock: true,
+          },
+          {
+            id: 'white',
+            name: 'White',
+            type: 'color' as const,
+            value: 'white',
+            inStock: true,
+          },
+          {
+            id: 'cream',
+            name: 'Cream',
+            type: 'color' as const,
+            value: 'cream',
+            inStock: true,
+          },
+          {
+            id: 'sage',
+            name: 'Sage',
+            type: 'color' as const,
+            value: 'sage',
+            inStock: true,
+          },
+        ]
 
   const getColorValue = (colorName: string): string => {
     const normalized = colorName.toLowerCase().trim()
@@ -67,6 +103,11 @@ export function ColorPicker({
   }
 
   const handleColorClick = (color: ProductVariant) => {
+    // Don't emit color selection for synthetic variants unless explicitly allowed
+    if (hasSyntheticVariant && !interactiveFallback) {
+      return
+    }
+
     if (onColorSelect) {
       onColorSelect(color.value)
     }
@@ -84,11 +125,8 @@ export function ColorPicker({
 
   return (
     <div className={cn('flex items-center gap-2', className)}>
-      {mode === 'full' && (
-        <span className="text-sm font-medium text-gray-700">Color:</span>
-      )}
       <div className={cn('flex gap-1.5', mode === 'full' && 'gap-2')}>
-        {colorVariants.map(color => {
+        {displayVariants.map(color => {
           const isSelected = selectedColor === color.value
           const colorValue = getColorValue(color.value)
           const isLight = [
@@ -99,6 +137,8 @@ export function ColorPicker({
             '#f5f3f0',
             '#d1d5db',
           ].includes(colorValue.toLowerCase())
+          const isDisabled =
+            !color.inStock || (hasSyntheticVariant && !interactiveFallback)
 
           return (
             <button
@@ -112,12 +152,12 @@ export function ColorPicker({
                 isSelected
                   ? 'scale-110 border-textile-navy shadow-md'
                   : 'border-gray-300 hover:scale-105 hover:border-gray-400',
-                !color.inStock && 'cursor-not-allowed opacity-50'
+                isDisabled && 'cursor-not-allowed opacity-50'
               )}
               style={{ backgroundColor: colorValue }}
               title={color.name || color.value}
               aria-label={`Select ${color.name || color.value} color`}
-              disabled={!color.inStock}
+              disabled={isDisabled}
             >
               {/* Inner border for light colors */}
               {isLight && (
@@ -152,7 +192,7 @@ export function ColorPicker({
 
       {mode === 'full' && selectedColor && (
         <span className="ml-2 text-sm text-gray-600">
-          {colorVariants.find(c => c.value === selectedColor)?.name ||
+          {displayVariants.find(c => c.value === selectedColor)?.name ||
             selectedColor}
         </span>
       )}

@@ -28,6 +28,70 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
+  async redirects() {
+    return [
+      {
+        source: '/bedding',
+        destination: '/collections/bedding',
+        permanent: false,
+      },
+      {
+        source: '/sheets',
+        destination: '/collections/sheets',
+        permanent: false,
+      },
+      {
+        source: '/comforters',
+        destination: '/collections/comforters',
+        permanent: false,
+      },
+      {
+        source: '/pillows',
+        destination: '/collections/pillows',
+        permanent: false,
+      },
+      {
+        source: '/bath',
+        destination: '/collections/bath',
+        permanent: false,
+      },
+      {
+        source: '/mattress',
+        destination: '/collections/mattress',
+        permanent: false,
+      },
+      {
+        source: '/loungewear',
+        destination: '/collections/loungewear',
+        permanent: false,
+      },
+      {
+        source: '/kids-baby',
+        destination: '/collections/kids-baby',
+        permanent: false,
+      },
+      {
+        source: '/home-decor',
+        destination: '/collections/home-decor',
+        permanent: false,
+      },
+      {
+        source: '/outdoor',
+        destination: '/collections/outdoor',
+        permanent: false,
+      },
+      {
+        source: '/new',
+        destination: '/collections/new',
+        permanent: false,
+      },
+      {
+        source: '/sale',
+        destination: '/collections/sale',
+        permanent: false,
+      },
+    ]
+  },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },

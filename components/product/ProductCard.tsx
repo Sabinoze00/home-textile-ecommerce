@@ -13,12 +13,14 @@ interface ProductCardProps {
   product: Product
   className?: string
   onColorSelect?: (productId: string | number, color: string) => void
+  collectionSlug?: string
 }
 
 export function ProductCard({
   product,
   className,
   onColorSelect,
+  collectionSlug,
 }: ProductCardProps) {
   const primaryImage =
     product.images?.find(img => img.isPrimary) || product.images?.[0]
@@ -38,6 +40,15 @@ export function ProductCard({
     if (onColorSelect) {
       onColorSelect(product.id, color)
     }
+  }
+
+  // Generate the correct product URL based on collection
+  const getProductUrl = () => {
+    const targetCollectionSlug = collectionSlug || product.category?.slug
+    if (targetCollectionSlug) {
+      return `/collections/${targetCollectionSlug}/products/${product.slug}`
+    }
+    return `/products/${product.slug}` // fallback to old URL
   }
 
   const renderStars = (rating: number) => {
@@ -82,7 +93,7 @@ export function ProductCard({
     >
       {/* Product Image */}
       <Link
-        href={`/products/${product.slug}`}
+        href={getProductUrl()}
         className="relative block aspect-square overflow-hidden"
       >
         {primaryImage ? (
@@ -100,7 +111,7 @@ export function ProductCard({
         )}
 
         {/* Badges */}
-        <div className="absolute left-3 top-3 z-10 flex flex-col gap-2">
+        <div className="absolute left-2 top-2 z-10 flex flex-col gap-2">
           {product.isOnSale && discountPercentage && (
             <Badge variant="sale">-{discountPercentage}%</Badge>
           )}
@@ -116,34 +127,36 @@ export function ProductCard({
       </Link>
 
       {/* Product Info */}
-      <div className="space-y-3 p-4">
-        {/* Category */}
+      <div className="flex flex-col space-y-2 p-3">
+        {/* Brand */}
         <div className="text-xs uppercase tracking-wide text-gray-500">
-          {product.category.name}
+          {product.brand || 'Brand'}
         </div>
 
         {/* Product Name */}
-        <Link href={`/products/${product.slug}`}>
-          <h3 className="line-clamp-2 font-medium text-gray-900 transition-colors group-hover:text-textile-navy">
+        <Link href={getProductUrl()} className="block">
+          <h3 className="line-clamp-2 text-sm font-bold leading-tight text-gray-900 transition-colors group-hover:text-textile-navy">
             {product.name}
           </h3>
         </Link>
 
         {/* Rating */}
-        {product.rating && (
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-0.5">
-              {renderStars(product.rating.average)}
+        <div>
+          {product.rating && (
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-0.5">
+                {renderStars(product.rating.average)}
+              </div>
+              <span className="text-xs text-gray-500">
+                ({product.rating.count})
+              </span>
             </div>
-            <span className="text-xs text-gray-500">
-              ({product.rating.count})
-            </span>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Price */}
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold text-gray-900">
+        <div className="flex items-center gap-1.5">
+          <span className="text-base font-bold text-textile-navy">
             {formatPrice(product.price)}
           </span>
           {product.originalPrice && product.originalPrice > product.price && (
@@ -154,33 +167,13 @@ export function ProductCard({
         </div>
 
         {/* Color Variants */}
-        {colorVariants.length > 0 && (
-          <div className="pt-2">
-            <ColorPicker
-              colors={colorVariants}
-              onColorSelect={handleColorSelect}
-              size="sm"
-              mode="thumbnail"
-            />
-          </div>
-        )}
-
-        {/* Short Description */}
-        {product.shortDescription && (
-          <p className="line-clamp-2 text-sm text-gray-600">
-            {product.shortDescription}
-          </p>
-        )}
-
-        {/* Add to Cart Button */}
-        <div className="pt-2">
-          <AddToCartButton
-            product={product}
-            productVariant={
-              colorVariants.length > 0 ? colorVariants[0] : undefined
-            }
-            className="w-full"
-            size="sm"
+        <div>
+          <ColorPicker
+            colors={colorVariants}
+            onColorSelect={handleColorSelect}
+            size="xs"
+            mode="thumbnail"
+            interactiveFallback={true}
           />
         </div>
       </div>
