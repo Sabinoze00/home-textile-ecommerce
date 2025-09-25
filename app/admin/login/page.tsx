@@ -16,25 +16,25 @@ export default function AdminLogin() {
     setMessage('')
 
     try {
-      const response = await fetch('/api/admin-login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      // Usa NextAuth signIn con il provider admin-login
+      const { signIn } = await import('next-auth/react')
+
+      const result = await signIn('admin-login', {
+        isAdmin: 'true',
+        redirect: false, // Non reindirizzare automaticamente
       })
 
-      const data = await response.json()
-
-      if (response.ok) {
+      if (result?.ok && !result?.error) {
         setMessage('✅ Login successful! Redirecting...')
         setTimeout(() => {
           router.push('/admin')
           router.refresh()
         }, 1000)
       } else {
-        setMessage(`❌ Error: ${data.error}`)
+        setMessage(`❌ Error: ${result?.error || 'Login failed'}`)
       }
     } catch (error) {
+      console.error('Login error:', error)
       setMessage('❌ Network error')
     } finally {
       setLoading(false)

@@ -14,6 +14,19 @@ async function main() {
   await prisma.product.deleteMany()
   await prisma.category.deleteMany()
 
+  // Create admin user
+  console.log('👤 Creating admin user...')
+  const adminUser = await prisma.user.upsert({
+    where: { email: 'admin@home-textiles.com' },
+    update: {},
+    create: {
+      name: 'Admin User',
+      email: 'admin@home-textiles.com',
+      role: 'ADMIN',
+    },
+  })
+  console.log('✅ Admin user created:', adminUser.email)
+
   // Create categories
   console.log('📂 Creating categories...')
   const categories = await Promise.all([
